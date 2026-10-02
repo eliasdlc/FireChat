@@ -1,4 +1,4 @@
 package com.example.firechat.data.repository
 
-class userRepository {
+class UserRepository {
 }
