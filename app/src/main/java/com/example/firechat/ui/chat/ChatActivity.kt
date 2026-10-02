@@ -2,9 +2,64 @@ package com.example.firechat.ui.chat
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.firechat.R
+import com.example.firechat.util.applySystemBarsPadding
+import com.google.android.material.appbar.MaterialToolbar
 
 class ChatActivity : AppCompatActivity() {
+
+    private val viewModel: ChatViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_chat)
+        findViewById<View>(R.id.main).applySystemBarsPadding()
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        val messageList = findViewById<RecyclerView>(R.id.messageList)
+        val messageInput = findViewById<EditText>(R.id.messageInput)
+        val sendButton = findViewById<ImageButton>(R.id.sendButton)
+
+        toolbar.title = viewModel.recipientName
+        toolbar.setNavigationOnClickListener { finish() }
+
+        val adapter = MessageAdapter(viewModel.myUid)
+        messageList.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
+        messageList.adapter = adapter
+
+        messageInput.doAfterTextChanged { text ->
+            sendButton.isEnabled = !text.isNullOrBlank()
+        }
+        sendButton.isEnabled = false
+        sendButton.setOnClickListener {
+            viewModel.sendText(messageInput.text.toString())
+            messageInput.text?.clear()
+        }
+
+        viewModel.messages.observe(this) { list ->
+            adapter.submitList(list) {
+                if (list.isNotEmpty()) messageList.scrollToPosition(list.lastIndex)
+            }
+        }
+        viewModel.uiState.observe(this) { state ->
+            state.error?.let {
+                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                viewModel.errorShown()
+            }
+        }
+    }
 
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"

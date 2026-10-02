@@ -7,13 +7,14 @@ import androidx.lifecycle.asLiveData
 import com.example.firechat.R
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.repository.ChatRepository
+import com.example.firechat.data.repository.UserRepository
 import kotlinx.coroutines.flow.catch
 
 class ConversationsViewModel : ViewModel() {
 
     private val chatRepository = ChatRepository()
 
-    val myUid: String = LOCAL_USER_ID
+    val myUid: String = UserRepository.LOCAL_USER_ID
 
     private val _error = MutableLiveData<Int?>()
     val error: LiveData<Int?> = _error
@@ -22,8 +23,4 @@ class ConversationsViewModel : ViewModel() {
         chatRepository.observeConversations(myUid)
             .catch { _error.value = R.string.error_loading_conversations }
             .asLiveData()
-
-    private companion object {
-        const val LOCAL_USER_ID = "local-user"
-    }
 }
