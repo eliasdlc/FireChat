@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="bg">#FFF3F4F6</color>
+    <color name="sf">#FFFFFFFF</color>
+    <color name="sf2">#FFE6E8EC</color>
+    <color name="ink">#FF15171C</color>
+    <color name="body">#FF3A3D44</color>
+    <color name="mute">#FF6B7079</color>
+    <color name="ac">#FF2F6BFF</color>
+    <color name="on">#FFFFFFFF</color>
+    <color name="error">#FFD92D20</color>
 </resources>
