@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.chat.ChatActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/navigate_back"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/space_m"
+        android:paddingVertical="@dimen/space_s"
+        app:layout_constraintBottom_toTopOf="@id/messageInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:listitem="@layout/item_message_received" />
+
+    <EditText
+        android:id="@+id/messageInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_s"
+        android:layout_marginBottom="@dimen/space_s"
+        android:background="@drawable/bg_composer"
+        android:hint="@string/chat_input_hint"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine|textCapSentences"
+        android:maxLines="4"
+        android:minHeight="@dimen/touch_target"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingVertical="@dimen/space_m"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/mute"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sendButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/sendButton"
+        android:layout_width="@dimen/touch_target"
+        android:layout_height="@dimen/touch_target"
+        android:layout_marginEnd="@dimen/space_s"
+        android:background="@drawable/bg_send_button"
+        android:contentDescription="@string/send"
+        android:src="@drawable/ic_send"
+        app:tint="@color/on"
+        app:layout_constraintBottom_toBottomOf="@id/messageInput"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

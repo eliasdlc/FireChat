@@ -9,6 +9,8 @@ class UserRepository {
     fun observeUsers(excludeUid: String): Flow<List<User>> =
         flowOf(sampleUsers.filter { it.uid != excludeUid }.sortedBy { it.name })
 
+    suspend fun getUser(uid: String): User? = sampleUsers.find { it.uid == uid }
+
     companion object {
         const val LOCAL_USER_ID = "local-user"
 

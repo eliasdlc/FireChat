@@ -11,4 +11,9 @@
     <string name="users_empty">Todavía no hay otros usuarios registrados</string>
     <string name="error_loading_users">No se pudo cargar la lista de usuarios</string>
     <string name="navigate_back">Volver</string>
+
+    <string name="chat_input_hint">Escribe un mensaje</string>
+    <string name="send">Enviar</string>
+    <string name="error_loading_messages">No se pudieron cargar los mensajes</string>
+    <string name="error_sending_message">No se pudo enviar el mensaje</string>
 </resources>
