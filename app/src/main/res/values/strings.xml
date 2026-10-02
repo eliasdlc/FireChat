@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">FireChat</string>
+
+    <string name="conversations_title">Conversaciones</string>
+    <string name="conversations_empty">Todavía no tienes conversaciones. Toca el botón para escribirle a alguien.</string>
+    <string name="new_chat">Nueva conversación</string>
+    <string name="message_image_preview">Imagen</string>
+    <string name="error_loading_conversations">No se pudieron cargar tus conversaciones</string>
 </resources>

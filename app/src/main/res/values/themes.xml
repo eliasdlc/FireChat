@@ -1,9 +1,91 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.FireChat" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/ac</item>
+        <item name="colorOnPrimary">@color/on</item>
+        <item name="colorSecondary">@color/ac</item>
+        <item name="colorOnSecondary">@color/on</item>
+        <item name="colorPrimaryContainer">@color/sf2</item>
+        <item name="colorOnPrimaryContainer">@color/ink</item>
+        <item name="colorSurface">@color/bg</item>
+        <item name="colorSurfaceContainer">@color/sf</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorOnSurfaceVariant">@color/mute</item>
+        <item name="colorOutline">@color/sf2</item>
+        <item name="colorError">@color/error</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:textColorSecondary">@color/mute</item>
+        <item name="materialButtonStyle">@style/Widget.MyChat.Button</item>
+        <item name="textInputStyle">@style/Widget.MyChat.TextInput</item>
+        <item name="toolbarStyle">@style/Widget.MyChat.Toolbar</item>
     </style>
 
     <style name="Theme.FireChat" parent="Base.Theme.FireChat" />
+
+    <!-- Botón principal: píldora de 54 de alto con el color de acento. -->
+    <style name="Widget.MyChat.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+    </style>
+
+    <!-- Botón de texto para los enlaces entre login y registro. -->
+    <style name="Widget.MyChat.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:minHeight">@dimen/touch_target</item>
+        <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.MyChat.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">@dimen/radius_field</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_field</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_field</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_field</item>
+        <item name="boxStrokeColor">@color/ac</item>
+        <item name="boxBackgroundColor">@color/sf</item>
+    </style>
+
+    <!-- La barra superior es del color del fondo: el acento no decora. -->
+    <style name="Widget.MyChat.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/bg</item>
+        <item name="titleTextColor">@color/ink</item>
+        <item name="titleTextAppearance">@style/TextAppearance.MyChat.Heading</item>
+    </style>
+
+    <style name="TextAppearance.MyChat.Display" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">@dimen/text_display</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="TextAppearance.MyChat.Heading" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">@dimen/text_heading</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="TextAppearance.MyChat.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@color/body</item>
+    </style>
+
+    <style name="TextAppearance.MyChat.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="TextAppearance.MyChat.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:textColor">@color/mute</item>
+    </style>
+
+    <!-- Esquinas redondeadas de las imágenes dentro de las burbujas. -->
+    <style name="ShapeAppearance.MyChat.Image" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/radius_image</item>
+    </style>
 </resources>
