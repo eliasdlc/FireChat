@@ -1,8 +1,43 @@
 <resources>
     <string name="app_name">FireChat</string>
 
+    <string name="login_title">Bienvenido a FireChat</string>
+    <string name="login_subtitle">Inicia sesión para seguir conversando</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="login_loading">Entrando…</string>
+    <string name="go_to_register">¿No tienes cuenta? Regístrate</string>
+
+    <!-- Registro -->
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_subtitle">Solo necesitas tu nombre, tu correo y una contraseña</string>
+    <string name="register_button">Crear cuenta</string>
+    <string name="register_loading">Creando cuenta…</string>
+    <string name="go_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Campos -->
+    <string name="hint_name">Nombre</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_confirm_password">Confirmar contraseña</string>
+
+    <!-- Validaciones -->
+    <string name="error_name_required">Escribe tu nombre</string>
+    <string name="error_email_required">Escribe tu correo</string>
+    <string name="error_email_format">El correo no tiene un formato válido</string>
+    <string name="error_password_required">Escribe tu contraseña</string>
+    <string name="error_password_length">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+
+    <string name="error_auth_invalid_credentials">Correo o contraseña incorrectos</string>
+    <string name="error_auth_email_in_use">Ya existe una cuenta con ese correo</string>
+    <string name="error_auth_weak_password">La contraseña es muy débil. Usa al menos 6 caracteres</string>
+    <string name="error_auth_too_many_requests">Demasiados intentos. Espera un momento y vuelve a probar</string>
+    <string name="error_network">No hay conexión a internet</string>
+    <string name="error_unknown">Algo salió mal. Inténtalo de nuevo</string>
+
     <string name="conversations_title">Conversaciones</string>
     <string name="conversations_empty">Todavía no tienes conversaciones. Toca el botón para escribirle a alguien.</string>
+    <string name="action_logout">Cerrar sesión</string>
     <string name="new_chat">Nueva conversación</string>
     <string name="message_image_preview">Imagen</string>
     <string name="error_loading_conversations">No se pudieron cargar tus conversaciones</string>

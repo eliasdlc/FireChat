@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +20,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.auth.LoginActivity
 import com.example.firechat.ui.chat.ChatActivity
 import com.example.firechat.ui.users.UsersActivity
 import com.example.firechat.util.applySystemBarsPadding
@@ -68,6 +71,26 @@ class ConversationsActivity : AppCompatActivity() {
         }
 
         askNotificationPermission()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_conversations, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_logout -> {
+            viewModel.logout()
+            openLogin()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun openLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 
     private fun askNotificationPermission() {

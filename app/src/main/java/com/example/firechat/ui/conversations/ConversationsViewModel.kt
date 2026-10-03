@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.firechat.R
 import com.example.firechat.data.model.Conversation
+import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.UserRepository
 import kotlinx.coroutines.flow.catch
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.catch
 class ConversationsViewModel : ViewModel() {
 
     private val chatRepository = ChatRepository()
+    private val authRepository = AuthRepository()
 
     val myUid: String = UserRepository.LOCAL_USER_ID
 
@@ -23,4 +25,8 @@ class ConversationsViewModel : ViewModel() {
         chatRepository.observeConversations(myUid)
             .catch { _error.value = R.string.error_loading_conversations }
             .asLiveData()
+
+    fun logout() {
+        authRepository.logout()
+    }
 }
