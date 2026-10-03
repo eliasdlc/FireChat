@@ -3,48 +3,75 @@ package com.example.firechat.data.repository
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.model.Message
 import com.example.firechat.data.model.User
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
-import java.util.Date
-import java.util.UUID
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
-class ChatRepository {
+class ChatRepository(
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
 
-    fun observeConversations(uid: String): Flow<List<Conversation>> =
-        conversations.map { all ->
-            all.values
-                .filter { uid in it.participants }
-                .sortedByDescending { it.lastMessageAt }
-        }
+    private val chats get() = db.collection(CHATS)
 
-    fun observeMessages(chatId: String): Flow<List<Message>> =
-        messages.map { it[chatId].orEmpty() }
+    fun observeConversations(uid: String): Flow<List<Conversation>> = callbackFlow {
+        val registration = chats.whereArrayContains(FIELD_PARTICIPANTS, uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val list = snapshot?.documents.orEmpty()
+                    .mapNotNull { it.toObject(Conversation::class.java, ESTIMATE) }
+                    .sortedByDescending { it.lastMessageAt }
+                trySend(list)
+            }
+        awaitClose { registration.remove() }
+    }
+
+    fun observeMessages(chatId: String): Flow<List<Message>> = callbackFlow {
+        val registration = chats.document(chatId).collection(MESSAGES)
+            .orderBy(FIELD_CREATED_AT, Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val list = snapshot?.documents.orEmpty()
+                    .mapNotNull { it.toObject(Message::class.java, ESTIMATE) }
+                trySend(list)
+            }
+        awaitClose { registration.remove() }
+    }
 
     suspend fun sendText(chatId: String, sender: User, recipient: User, text: String) {
-        val message = Message(
-            id = UUID.randomUUID().toString(),
-            senderId = sender.uid,
-            senderName = sender.name,
-            text = text,
-            createdAt = Date()
+        val chatRef = chats.document(chatId)
+        val messageRef = chatRef.collection(MESSAGES).document()
+        val message = Message(senderId = sender.uid, senderName = sender.name, text = text)
+        val summary = mapOf(
+            FIELD_PARTICIPANTS to listOf(sender.uid, recipient.uid),
+            "participantNames" to mapOf(sender.uid to sender.name, recipient.uid to recipient.name),
+            "lastMessage" to text,
+            "lastMessageAt" to FieldValue.serverTimestamp()
         )
-        messages.update { it + (chatId to it[chatId].orEmpty() + message) }
-        conversations.update {
-            it + (chatId to Conversation(
-                id = chatId,
-                participants = listOf(sender.uid, recipient.uid),
-                participantNames = mapOf(sender.uid to sender.name, recipient.uid to recipient.name),
-                lastMessage = message.text,
-                lastMessageAt = message.createdAt
-            ))
-        }
+        db.batch()
+            .set(messageRef, message)
+            .set(chatRef, summary, SetOptions.merge())
+            .commit()
+            .await()
     }
 
     companion object {
-        private val messages = MutableStateFlow<Map<String, List<Message>>>(emptyMap())
-        private val conversations = MutableStateFlow<Map<String, Conversation>>(emptyMap())
+        private const val CHATS = "chats"
+        private const val MESSAGES = "messages"
+        private const val FIELD_PARTICIPANTS = "participants"
+        private const val FIELD_CREATED_AT = "createdAt"
+        private val ESTIMATE = DocumentSnapshot.ServerTimestampBehavior.ESTIMATE
 
         fun chatIdFor(uidA: String, uidB: String): String =
             listOf(uidA, uidB).sorted().joinToString("_")
