@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.firechat.R
 import com.example.firechat.data.model.Message
 import com.example.firechat.data.model.User
+import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.UserRepository
 import kotlinx.coroutines.flow.catch
@@ -19,7 +20,7 @@ class ChatViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     private val userRepository = UserRepository()
     private val chatRepository = ChatRepository()
 
-    val myUid: String = UserRepository.LOCAL_USER_ID
+    val myUid: String = AuthRepository().currentUserId.orEmpty()
 
     private val recipient = User(
         uid = savedStateHandle.get<String>(ChatActivity.EXTRA_USER_ID).orEmpty(),

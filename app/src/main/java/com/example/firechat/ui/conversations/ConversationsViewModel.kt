@@ -8,7 +8,6 @@ import com.example.firechat.R
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
-import com.example.firechat.data.repository.UserRepository
 import kotlinx.coroutines.flow.catch
 
 class ConversationsViewModel : ViewModel() {
@@ -16,7 +15,7 @@ class ConversationsViewModel : ViewModel() {
     private val chatRepository = ChatRepository()
     private val authRepository = AuthRepository()
 
-    val myUid: String = UserRepository.LOCAL_USER_ID
+    val myUid: String = authRepository.currentUserId.orEmpty()
 
     private val _error = MutableLiveData<Int?>()
     val error: LiveData<Int?> = _error
