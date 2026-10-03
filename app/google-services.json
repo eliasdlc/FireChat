@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722252998346",
+    "project_id": "firechat-eliasdlc",
+    "storage_bucket": "firechat-eliasdlc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722252998346:android:a10d600d985d2bc1233633",
+        "android_client_info": {
+          "package_name": "com.example.firechat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOLhfxhc1xM9DIpGY1SUr1L-9sRVe9uvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
