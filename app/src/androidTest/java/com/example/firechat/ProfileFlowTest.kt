@@ -257,12 +257,15 @@ class ProfileFlowTest {
         ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
             for (theme in listOf(AppTheme.DARK, AppTheme.LIGHT, AppTheme.SYSTEM)) {
                 onView(withId(R.id.appearanceRow)).perform(scrollTo(), click())
+                onView(withId(R.id.appearanceThemeRow)).perform(scrollTo(), click())
                 val label = when (theme) {
                     AppTheme.DARK -> R.string.theme_dark
                     AppTheme.LIGHT -> R.string.theme_light
                     AppTheme.SYSTEM -> R.string.theme_system
                 }
                 onView(withText(label)).perform(click())
+                onView(androidx.test.espresso.matcher.ViewMatchers.withContentDescription(R.string.navigate_back))
+                    .perform(click())
                 assertEquals(theme, ThemePreferences.read(context))
                 scenario.recreate()
                 waitUntil {

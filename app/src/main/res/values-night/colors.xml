@@ -9,4 +9,14 @@
     <color name="ac">#82AAFF</color>
     <color name="on">#0B1B3D</color>
     <color name="error">#FFB4AB</color>
+    <color name="ac_green">#75D9A9</color>
+    <color name="on_green">#082C1D</color>
+    <color name="ac_violet">#C3AAFF</color>
+    <color name="on_violet">#24133F</color>
+    <color name="ac_rose">#FFABD0</color>
+    <color name="on_rose">#3B1028</color>
+    <color name="ac_amber">#F4C66A</color>
+    <color name="on_amber">#312300</color>
+    <color name="ac_teal">#74D8DE</color>
+    <color name="on_teal">#073034</color>
 </resources>

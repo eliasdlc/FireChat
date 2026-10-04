@@ -117,6 +117,6 @@
         android:src="@drawable/ic_send"
         app:layout_constraintBottom_toBottomOf="@id/messageInput"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/on" />
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

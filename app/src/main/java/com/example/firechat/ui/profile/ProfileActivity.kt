@@ -7,20 +7,18 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import com.example.firechat.ui.theme.ThemedActivity
+import com.example.firechat.ui.theme.AppearanceActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import com.example.firechat.R
 import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.ui.auth.LoginActivity
-import com.example.firechat.ui.theme.AppTheme
-import com.example.firechat.ui.theme.ThemePreferences
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : ThemedActivity() {
     private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +35,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
         val editRow = findViewById<View>(R.id.editProfileRow)
         editRow.setOnClickListener { startActivity(Intent(this, EditProfileActivity::class.java)) }
-        findViewById<View>(R.id.appearanceRow).setOnClickListener { showThemeDialog() }
+        findViewById<View>(R.id.appearanceRow).setOnClickListener { startActivity(Intent(this, AppearanceActivity::class.java)) }
         findViewById<View>(R.id.logoutProfileRow).setOnClickListener { confirmLogout() }
         val retry = findViewById<View>(R.id.retryProfileButton)
         retry.setOnClickListener { viewModel.loadProfile() }
@@ -61,20 +59,6 @@ class ProfileActivity : AppCompatActivity() {
         super.onResume()
         // Reload the canonical profile after returning from its editor.
         viewModel.loadProfile()
-    }
-
-    private fun showThemeDialog() {
-        val modes = listOf(AppTheme.SYSTEM, AppTheme.DARK, AppTheme.LIGHT)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.theme_dialog_title)
-            .setSingleChoiceItems(R.array.theme_options, modes.indexOf(ThemePreferences.read(this))) { dialog, which ->
-                val theme = modes[which]
-                ThemePreferences.save(this, theme)
-                dialog.dismiss()
-                AppCompatDelegate.setDefaultNightMode(theme.nightMode)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 
     private fun confirmLogout() {

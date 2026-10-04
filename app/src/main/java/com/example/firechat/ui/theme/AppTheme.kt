@@ -3,7 +3,6 @@ package com.example.firechat.ui.theme
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.example.firechat.ui.theme.ThemePreferences.KEY_THEME
 
 enum class AppTheme(val nightMode: Int) {
     SYSTEM(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM),
@@ -14,12 +13,24 @@ enum class AppTheme(val nightMode: Int) {
 object ThemePreferences {
     private const val FILE_NAME = "appearance"
     private const val KEY_THEME = "theme"
+    private const val KEY_ACCENT = "accent"
 
     fun save(context: Context, theme: AppTheme) {
         context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
             .edit {
                 putString(KEY_THEME, theme.name)
             }
+    }
+
+    fun saveAccent(context: Context, accent: AppAccent) {
+        context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
+            .edit { putString(KEY_ACCENT, accent.name) }
+    }
+
+    fun readAccent(context: Context): AppAccent {
+        val savedName = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_ACCENT, null)
+        return AppAccent.entries.firstOrNull { it.name == savedName } ?: AppAccent.BLUE
     }
 
     fun read(context: Context): AppTheme {
@@ -32,6 +43,3 @@ object ThemePreferences {
             ?: AppTheme.SYSTEM
     }
 }
-
-
-

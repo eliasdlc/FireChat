@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.firechat.ui.theme.ThemedActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +28,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 
 
-class ConversationsActivity : AppCompatActivity() {
+class ConversationsActivity : ThemedActivity() {
 
     private val viewModel: ConversationsViewModel by viewModels()
 

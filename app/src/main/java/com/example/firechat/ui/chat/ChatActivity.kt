@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.firechat.ui.theme.ThemedActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +20,7 @@ import com.example.firechat.ui.profile.UserProfileActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : ThemedActivity() {
 
     private val viewModel: ChatViewModel by viewModels()
 

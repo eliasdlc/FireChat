@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.firechat.ui.theme.ThemedActivity
 import com.example.firechat.R
 import com.example.firechat.ui.conversations.ConversationsActivity
 import com.example.firechat.util.applySystemBarsPadding
@@ -14,7 +14,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : ThemedActivity() {
 
     private val viewModel: LoginViewModel by viewModels()
 

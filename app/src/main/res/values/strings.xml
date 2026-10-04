@@ -67,7 +67,7 @@
     <string name="profile_edit">Editar perfil</string>
     <string name="profile_edit_description">Tu nombre y los datos de tu cuenta</string>
     <string name="profile_appearance">Apariencia</string>
-    <string name="profile_appearance_description">Tema claro, oscuro o del sistema</string>
+    <string name="profile_appearance_description">Modo de apariencia y color primario</string>
     <string name="profile_logout_description">Salir de FireChat en este dispositivo</string>
     <string name="profile_logout_question">¿Quieres cerrar tu sesión?</string>
     <string name="profile_description">Así te verán los demás usuarios de FireChat.</string>
@@ -95,4 +95,17 @@
     <string name="error_nickname_length">El apodo debe tener 40 caracteres o menos.</string>
     <string name="error_saving_nickname">No se pudo guardar el apodo. Intenta nuevamente.</string>
     <string name="contact_typing">%1$s está escribiendo</string>
+    <string name="appearance_color_title">Color primario</string>
+    <string name="appearance_color_description">Elige el color de los botones y mensajes enviados. Se aplica en este dispositivo.</string>
+    <string name="appearance_mode_title">Modo de apariencia</string>
+    <string name="appearance_preview_title">Así se verá tu chat</string>
+    <string name="appearance_preview_message">¡Hola! Este es tu nuevo color.</string>
+    <string name="appearance_restore_color">Restaurar azul original</string>
+    <string name="accent_blue">Azul</string>
+    <string name="accent_green">Verde</string>
+    <string name="accent_violet">Violeta</string>
+    <string name="accent_rose">Rosa</string>
+    <string name="accent_amber">Ámbar</string>
+    <string name="accent_teal">Turquesa</string>
+    <string name="accent_selected">%1$s, seleccionado</string>
 </resources>

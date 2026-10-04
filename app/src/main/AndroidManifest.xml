@@ -59,6 +59,11 @@
             android:parentActivityName=".ui.chat.ChatActivity" />
 
         <activity
+            android:name=".ui.theme.AppearanceActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.profile.ProfileActivity" />
+
+        <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false"
             android:parentActivityName=".ui.conversations.ConversationsActivity"

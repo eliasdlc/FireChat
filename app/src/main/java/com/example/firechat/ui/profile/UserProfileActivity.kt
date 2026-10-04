@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.firechat.ui.theme.ThemedActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -19,7 +19,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class UserProfileActivity : AppCompatActivity() {
+class UserProfileActivity : ThemedActivity() {
     private val viewModel: UserProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
