@@ -15,6 +15,13 @@ class ConversationAdapter(
     private val myUid: String,
     private val onClick: (Conversation) -> Unit
 ) : ListAdapter<Conversation, ConversationAdapter.ViewHolder>(Diff) {
+    private var nicknames: Map<String, String> = emptyMap()
+
+    fun submitNicknames(value: Map<String, String>) {
+        if (nicknames == value) return
+        nicknames = value
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -35,7 +42,7 @@ class ConversationAdapter(
 
         fun bind(conversation: Conversation) {
             val context = itemView.context
-            val otherName = conversation.otherName(myUid)
+            val otherName = nicknames[conversation.otherUid(myUid)] ?: conversation.otherName(myUid)
             name.text = otherName
             avatar.text = otherName.take(1).uppercase()
             lastMessage.text = if (conversation.lastMessageIsImage) {

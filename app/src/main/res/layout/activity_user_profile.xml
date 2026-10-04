@@ -57,6 +57,14 @@
                     android:textAppearance="@style/TextAppearance.MyChat.Display"
                     tools:text="Camila Prueba" />
                 <TextView
+                    android:id="@+id/userProfilePublicName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_s"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MyChat.Caption"
+                    android:visibility="gone" />
+                <TextView
                     android:id="@+id/userProfileEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,6 +73,59 @@
                     android:textAppearance="@style/TextAppearance.MyChat.Caption"
                     android:textIsSelectable="true"
                     tools:text="contacto@firechat.test" />
+
+                <LinearLayout
+                    android:id="@+id/nicknameEditor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xxl"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nickname_description"
+                        android:textAppearance="@style/TextAppearance.MyChat.Caption" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/nicknameLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_m"
+                        android:hint="@string/nickname_hint"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="40">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/nicknameInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="false"
+                            android:importantForAutofill="no"
+                            android:inputType="textPersonName|textCapWords"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/saveNicknameButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_m"
+                        android:enabled="false"
+                        android:text="@string/nickname_save" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/removeNicknameButton"
+                        style="@style/Widget.MyChat.Button.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nickname_remove"
+                        android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/nicknameStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:accessibilityLiveRegion="polite"
+                        android:textAppearance="@style/TextAppearance.MyChat.Body"
+                        android:visibility="gone" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView

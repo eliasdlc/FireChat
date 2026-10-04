@@ -35,6 +35,7 @@ class UsersActivity : AppCompatActivity() {
         }
         userList.layoutManager = LinearLayoutManager(this)
         userList.adapter = adapter
+        viewModel.nicknames.observe(this) { adapter.submitNicknames(it) }
 
         viewModel.users.observe(this) { list ->
             adapter.submitList(list)

@@ -55,6 +55,7 @@
         <activity
             android:name=".ui.profile.UserProfileActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:parentActivityName=".ui.chat.ChatActivity" />
 
         <activity

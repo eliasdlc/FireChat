@@ -3,7 +3,8 @@ package com.example.firechat.ui.chat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.firechat.R
@@ -12,10 +13,12 @@ import com.example.firechat.data.model.User
 import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.UserRepository
+import com.example.firechat.data.repository.NicknameRepository
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class ChatViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
 
     private val userRepository = UserRepository()
     private val chatRepository = ChatRepository()
@@ -29,6 +32,10 @@ class ChatViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     val recipientName: String = recipient.name
     val recipientId: String = recipient.uid
+    // Personal display names never enter the public User used for sending messages.
+    val recipientDisplayName: LiveData<String> = NicknameRepository(application).observe(myUid)
+        .map { it[recipient.uid] ?: recipient.name }
+        .asLiveData()
 
     val chatId: String = ChatRepository.chatIdFor(myUid, recipient.uid)
 

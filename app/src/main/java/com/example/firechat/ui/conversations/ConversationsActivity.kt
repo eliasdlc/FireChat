@@ -54,6 +54,7 @@ class ConversationsActivity : AppCompatActivity() {
         }
         conversationList.layoutManager = LinearLayoutManager(this)
         conversationList.adapter = adapter
+        viewModel.nicknames.observe(this) { adapter.submitNicknames(it) }
 
         newChatButton.setOnClickListener {
             startActivity(Intent(this, UsersActivity::class.java))

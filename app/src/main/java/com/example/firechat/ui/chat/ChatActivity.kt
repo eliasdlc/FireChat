@@ -51,6 +51,11 @@ class ChatActivity : AppCompatActivity() {
                 startActivity(UserProfileActivity.newIntent(this@ChatActivity, viewModel.recipientId))
             }
         }
+        viewModel.recipientDisplayName.observe(this) { displayName ->
+            chatName.text = displayName
+            chatAvatar.text = displayName.trim().take(1).uppercase().ifBlank { "?" }
+            findViewById<View>(R.id.chatProfileHeader).contentDescription = getString(R.string.view_user_profile, displayName)
+        }
 
         val adapter = MessageAdapter(viewModel.myUid)
         messageList.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }

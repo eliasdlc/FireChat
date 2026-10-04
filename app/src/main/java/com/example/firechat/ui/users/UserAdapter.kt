@@ -13,6 +13,13 @@ import com.example.firechat.data.model.User
 class UserAdapter(
     private val onClick: (User) -> Unit
 ) : ListAdapter<User, UserAdapter.ViewHolder>(Diff) {
+    private var nicknames: Map<String, String> = emptyMap()
+
+    fun submitNicknames(value: Map<String, String>) {
+        if (nicknames == value) return
+        nicknames = value
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -31,9 +38,10 @@ class UserAdapter(
         private val email: TextView = itemView.findViewById(R.id.email)
 
         fun bind(user: User) {
-            name.text = user.name
+            val displayName = nicknames[user.uid] ?: user.name
+            name.text = displayName
             email.text = user.email
-            avatar.text = user.name.take(1).uppercase()
+            avatar.text = displayName.take(1).uppercase()
             itemView.setOnClickListener { onClick(user) }
         }
     }

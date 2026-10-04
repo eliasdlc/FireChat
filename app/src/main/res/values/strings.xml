@@ -85,4 +85,13 @@
     <string name="view_user_profile">Ver perfil de %1$s</string>
     <string name="error_loading_user_profile">No se pudo cargar este perfil. Intenta nuevamente.</string>
     <string name="error_user_profile_missing">Este perfil ya no está disponible.</string>
+    <string name="nickname_hint">Apodo personal</string>
+    <string name="nickname_description">Solo tú lo ves, en este dispositivo. Déjalo vacío para usar el nombre público.</string>
+    <string name="nickname_public_name">Nombre público: %1$s</string>
+    <string name="nickname_save">Guardar apodo</string>
+    <string name="nickname_remove">Quitar apodo</string>
+    <string name="nickname_saved">Apodo guardado.</string>
+    <string name="nickname_removed">Apodo eliminado.</string>
+    <string name="error_nickname_length">El apodo debe tener 40 caracteres o menos.</string>
+    <string name="error_saving_nickname">No se pudo guardar el apodo. Intenta nuevamente.</string>
 </resources>
