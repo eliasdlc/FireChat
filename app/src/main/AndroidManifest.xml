@@ -53,6 +53,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.profile.UserProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.chat.ChatActivity" />
+
+        <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false"
             android:parentActivityName=".ui.conversations.ConversationsActivity"

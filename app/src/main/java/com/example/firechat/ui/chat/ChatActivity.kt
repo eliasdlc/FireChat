@@ -15,6 +15,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.profile.UserProfileActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 
@@ -43,6 +44,13 @@ class ChatActivity : AppCompatActivity() {
             .uppercase()
             .ifBlank { "?" }
         toolbar.setNavigationOnClickListener { finish() }
+        findViewById<View>(R.id.chatProfileHeader).apply {
+            isEnabled = viewModel.recipientId.isNotBlank()
+            contentDescription = getString(R.string.view_user_profile, viewModel.recipientName)
+            setOnClickListener {
+                startActivity(UserProfileActivity.newIntent(this@ChatActivity, viewModel.recipientId))
+            }
+        }
 
         val adapter = MessageAdapter(viewModel.myUid)
         messageList.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }

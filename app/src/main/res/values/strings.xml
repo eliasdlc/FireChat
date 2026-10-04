@@ -81,4 +81,8 @@
     <string name="error_saving_profile">No se pudo guardar el nombre. Tus cambios siguen en el formulario.</string>
     <string name="error_profile_missing">No se encontró el perfil de esta cuenta.</string>
     <string name="error_profile_session">Tu sesión ya no está disponible. Vuelve a iniciar sesión.</string>
+    <string name="user_profile_title">Perfil de usuario</string>
+    <string name="view_user_profile">Ver perfil de %1$s</string>
+    <string name="error_loading_user_profile">No se pudo cargar este perfil. Intenta nuevamente.</string>
+    <string name="error_user_profile_missing">Este perfil ya no está disponible.</string>
 </resources>

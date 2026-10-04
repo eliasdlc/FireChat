@@ -28,6 +28,7 @@ class ChatViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     )
 
     val recipientName: String = recipient.name
+    val recipientId: String = recipient.uid
 
     val chatId: String = ChatRepository.chatIdFor(myUid, recipient.uid)
 
