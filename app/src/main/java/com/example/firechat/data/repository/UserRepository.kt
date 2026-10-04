@@ -20,6 +20,14 @@ class UserRepository(
     suspend fun getUser(uid: String): User? =
         users.document(uid).get().await().toObject(User::class.java)
 
+    suspend fun updateName(uid: String, name: String) {
+        require(uid.isNotBlank())
+        require(name.isNotBlank())
+        users.document(uid)
+            .update(FIELD_NAME, name.trim())
+            .await()
+    }
+
     fun observeUsers(excludeUid: String): Flow<List<User>> = callbackFlow {
         val registration = users.orderBy(FIELD_NAME).addSnapshotListener { snapshot, error ->
             if (error != null) {

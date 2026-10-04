@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
 import com.example.firechat.ui.auth.LoginActivity
 import com.example.firechat.ui.chat.ChatActivity
+import com.example.firechat.ui.profile.ProfileActivity
 import com.example.firechat.ui.users.UsersActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
@@ -102,6 +103,10 @@ class ConversationsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_profile -> {
+            startActivity(Intent(this, ProfileActivity::class.java))
+            true
+        }
         R.id.action_logout -> {
             viewModel.logout()
             openLogin()

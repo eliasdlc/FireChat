@@ -64,4 +64,16 @@
         <item>@string/theme_light</item>
     </string-array>
 
+    <string name="profile_title">Mi perfil</string>
+    <string name="profile_description">Así te verán los demás usuarios de FireChat.</string>
+    <string name="profile_email_read_only">El correo identifica tu cuenta y no se modifica aquí.</string>
+    <string name="profile_save">Guardar cambios</string>
+    <string name="profile_saving">Guardando…</string>
+    <string name="profile_loading">Cargando perfil…</string>
+    <string name="profile_saved">Nombre actualizado.</string>
+    <string name="profile_retry">Reintentar</string>
+    <string name="error_loading_profile">No se pudo cargar tu perfil. Intenta nuevamente.</string>
+    <string name="error_saving_profile">No se pudo guardar el nombre. Tus cambios siguen en el formulario.</string>
+    <string name="error_profile_missing">No se encontró el perfil de esta cuenta.</string>
+    <string name="error_profile_session">Tu sesión ya no está disponible. Vuelve a iniciar sesión.</string>
 </resources>
