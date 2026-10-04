@@ -21,6 +21,7 @@ import com.example.firechat.data.model.User
 import com.example.firechat.data.repository.UserRepository
 import com.example.firechat.ui.conversations.ConversationsActivity
 import com.example.firechat.ui.profile.ProfileActivity
+import com.example.firechat.ui.profile.EditProfileActivity
 import com.example.firechat.ui.theme.AppTheme
 import com.example.firechat.ui.theme.ThemePreferences
 import com.google.android.material.button.MaterialButton
@@ -96,7 +97,7 @@ class ProfileFlowTest {
             instrumentation.runOnMainSync {
                 AppCompatDelegate.setDefaultNightMode(theme.nightMode)
             }
-            ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+            ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
                 awaitLoaded(scenario)
                 onView(withId(R.id.profileEmail)).check(matches(withText(email)))
                 scenario.onActivity {
@@ -113,7 +114,7 @@ class ProfileFlowTest {
     @Test
     fun bSavesTrimmedNamePreservesFieldsAndReopens() {
         seedProfile()
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario)
             onView(withId(R.id.profileNameInput)).perform(replaceText("  Nuevo Perfil  "), closeSoftKeyboard())
             onView(withId(R.id.saveProfileButton)).perform(scrollTo(), click())
@@ -128,7 +129,7 @@ class ProfileFlowTest {
             assertEquals("preserve-me", stored.getString("fixtureExtra"))
             capture("profile-saved")
         }
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario, "Nuevo Perfil")
             capture("profile-reopened")
         }
@@ -137,7 +138,7 @@ class ProfileFlowTest {
     @Test
     fun cRejectsBlankNameWithoutWriting() {
         seedProfile()
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario)
             onView(withId(R.id.profileNameInput)).perform(replaceText("   "), closeSoftKeyboard())
             onView(withId(R.id.saveProfileButton)).perform(scrollTo(), click())
@@ -153,7 +154,7 @@ class ProfileFlowTest {
     @Test
     fun dRecreationPreservesUnsavedDraft() {
         seedProfile()
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario)
             onView(withId(R.id.profileNameInput)).perform(replaceText("Borrador sin guardar"), closeSoftKeyboard())
             scenario.recreate()
@@ -165,7 +166,7 @@ class ProfileFlowTest {
 
     @Test
     fun eMissingProfileCanRetry() {
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitError(scenario, R.string.error_profile_missing)
             capture("profile-missing")
             seedProfile()
@@ -177,7 +178,7 @@ class ProfileFlowTest {
     @Test
     fun fMissingSessionDisablesEditing() {
         auth.signOut()
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitError(scenario, R.string.error_profile_session)
             scenario.onActivity {
                 assertFalse(it.findViewById<TextView>(R.id.profileNameInput).isEnabled)
@@ -190,7 +191,7 @@ class ProfileFlowTest {
     @Test
     fun gExpiredSessionKeepsDraftWithoutWriting() {
         seedProfile()
-        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario)
             auth.signOut()
             onView(withId(R.id.profileNameInput)).perform(replaceText("Cambio pendiente"), closeSoftKeyboard())
@@ -206,11 +207,11 @@ class ProfileFlowTest {
     fun hMenuOpensProfileAndBackReturnsToConversations() {
         seedProfile()
         ActivityScenario.launch(ConversationsActivity::class.java).use {
-            androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu(context)
-            onView(withText(R.string.profile_title)).perform(click())
+            capture("conversations-profile-access")
+            onView(withId(R.id.action_profile)).perform(click())
             waitUntil {
                 try {
-                    onView(withId(R.id.profileNameInput)).check(matches(withText("Ana Prueba")))
+                    onView(withId(R.id.profileDisplayName)).check(matches(withText("Ana Prueba")))
                     true
                 } catch (_: AssertionError) {
                     false
@@ -218,6 +219,32 @@ class ProfileFlowTest {
                     false
                 }
             }
+            capture("profile-home")
+            onView(withId(R.id.editProfileRow)).perform(scrollTo(), click())
+            waitUntil {
+                try {
+                    onView(withId(R.id.profileNameInput)).check(matches(withText("Ana Prueba")))
+                    true
+                } catch (_: AssertionError) { false }
+            }
+            onView(withId(R.id.profileNameInput)).perform(replaceText("Nombre actualizado"), closeSoftKeyboard())
+            onView(withId(R.id.saveProfileButton)).perform(scrollTo(), click())
+            waitUntil {
+                try {
+                    onView(withId(R.id.profileStatus)).check(matches(withText(R.string.profile_saved)))
+                    true
+                } catch (_: AssertionError) { false }
+            }
+            onView(androidx.test.espresso.matcher.ViewMatchers.withContentDescription(R.string.navigate_back))
+                .perform(click())
+            waitUntil {
+                try {
+                    onView(withId(R.id.profileDisplayName)).check(matches(withText("Nombre actualizado")))
+                    true
+                } catch (_: AssertionError) { false }
+            }
+            assertEquals("Nombre actualizado", serverName())
+            capture("profile-home-updated")
             onView(androidx.test.espresso.matcher.ViewMatchers.withContentDescription(R.string.navigate_back))
                 .perform(click())
             onView(withId(R.id.newChatButton)).check(matches(isDisplayed()))
@@ -225,9 +252,49 @@ class ProfileFlowTest {
     }
 
     @Test
-    fun zBackendFailureKeepsDraftAndNeverShowsSuccess() {
+    fun iAppearanceChangesFromProfileAndPersists() {
         seedProfile()
         ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+            for (theme in listOf(AppTheme.DARK, AppTheme.LIGHT, AppTheme.SYSTEM)) {
+                onView(withId(R.id.appearanceRow)).perform(scrollTo(), click())
+                val label = when (theme) {
+                    AppTheme.DARK -> R.string.theme_dark
+                    AppTheme.LIGHT -> R.string.theme_light
+                    AppTheme.SYSTEM -> R.string.theme_system
+                }
+                onView(withText(label)).perform(click())
+                assertEquals(theme, ThemePreferences.read(context))
+                scenario.recreate()
+                waitUntil {
+                    var ready = false
+                    scenario.onActivity {
+                        ready = it.findViewById<TextView>(R.id.profileDisplayName).text == "Ana Prueba"
+                    }
+                    ready
+                }
+                capture("profile-home-${theme.name.lowercase()}")
+            }
+        }
+    }
+
+    @Test
+    fun jLogoutCanBeCancelledThenReturnsToLogin() {
+        seedProfile()
+        ActivityScenario.launch(ProfileActivity::class.java).use {
+            onView(withId(R.id.logoutProfileRow)).perform(scrollTo(), click())
+            onView(withId(android.R.id.button2)).perform(click())
+            assertEquals(uid, auth.currentUser?.uid)
+            onView(withId(R.id.logoutProfileRow)).perform(scrollTo(), click())
+            onView(withId(android.R.id.button1)).perform(click())
+            assertEquals(null, auth.currentUser)
+            onView(withId(R.id.loginButton)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun zBackendFailureKeepsDraftAndNeverShowsSuccess() {
+        seedProfile()
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
             awaitLoaded(scenario)
             runBlocking { db.terminate().await() }
             onView(withId(R.id.profileNameInput)).perform(replaceText("No confirmado"), closeSoftKeyboard())
@@ -247,18 +314,18 @@ class ProfileFlowTest {
         db.collection("users").document(uid).get(Source.SERVER).await().getString("name")
     }
 
-    private fun awaitLoaded(scenario: ActivityScenario<ProfileActivity>, name: String = "Ana Prueba") =
+    private fun awaitLoaded(scenario: ActivityScenario<EditProfileActivity>, name: String = "Ana Prueba") =
         awaitState(scenario) {
             val input = it.findViewById<TextView>(R.id.profileNameInput)
             input.isEnabled && input.text.toString() == name
         }
 
-    private fun awaitError(scenario: ActivityScenario<ProfileActivity>, message: Int) =
+    private fun awaitError(scenario: ActivityScenario<EditProfileActivity>, message: Int) =
         awaitState(scenario) {
             it.findViewById<TextView>(R.id.profileError).text == context.getString(message)
         }
 
-    private fun awaitState(scenario: ActivityScenario<ProfileActivity>, predicate: (ProfileActivity) -> Boolean) {
+    private fun awaitState(scenario: ActivityScenario<EditProfileActivity>, predicate: (EditProfileActivity) -> Boolean) {
         waitUntil {
             var ready = false
             scenario.onActivity { ready = predicate(it) }

@@ -1,5 +1,6 @@
 package com.example.firechat.ui.profile
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -7,15 +8,17 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.widget.doAfterTextChanged
+import androidx.core.view.isVisible
 import com.example.firechat.R
+import com.example.firechat.data.repository.AuthRepository
+import com.example.firechat.ui.auth.LoginActivity
+import com.example.firechat.ui.theme.AppTheme
+import com.example.firechat.ui.theme.ThemePreferences
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ProfileActivity : AppCompatActivity() {
     private val viewModel: ProfileViewModel by viewModels()
@@ -32,39 +35,60 @@ class ProfileActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.main).applySystemBarsPadding()
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
-
-        val nameInput = findViewById<TextInputEditText>(R.id.profileNameInput)
-        val nameLayout = findViewById<TextInputLayout>(R.id.profileNameLayout)
-        val email = findViewById<TextView>(R.id.profileEmail)
-        val avatar = findViewById<TextView>(R.id.profileAvatar)
+        val editRow = findViewById<View>(R.id.editProfileRow)
+        editRow.setOnClickListener { startActivity(Intent(this, EditProfileActivity::class.java)) }
+        findViewById<View>(R.id.appearanceRow).setOnClickListener { showThemeDialog() }
+        findViewById<View>(R.id.logoutProfileRow).setOnClickListener { confirmLogout() }
+        val retry = findViewById<View>(R.id.retryProfileButton)
+        retry.setOnClickListener { viewModel.loadProfile() }
         val status = findViewById<TextView>(R.id.profileStatus)
         val error = findViewById<TextView>(R.id.profileError)
-        val saveButton = findViewById<MaterialButton>(R.id.saveProfileButton)
-        val retryButton = findViewById<MaterialButton>(R.id.retryProfileButton)
-
-        nameInput.doAfterTextChanged { viewModel.nameChanged(it.toString()) }
-        saveButton.setOnClickListener { viewModel.save() }
-        retryButton.setOnClickListener { viewModel.loadProfile() }
-
         viewModel.uiState.observe(this) { state ->
-            nameInput.isEnabled = state.isLoaded && !state.isSaving
-            if (nameInput.text.toString() != state.name) nameInput.setText(state.name)
-            nameLayout.error = state.nameError?.let(::getString)
-            email.text = state.email
-            avatar.text = state.name.trim().take(1).uppercase().ifBlank { "?" }
+            findViewById<TextView>(R.id.profileDisplayName).text = state.name
+            findViewById<TextView>(R.id.profileEmail).text = state.email
+            findViewById<TextView>(R.id.profileAvatar).text =
+                state.name.trim().take(1).uppercase().ifBlank { "?" }
+            editRow.isEnabled = state.isLoaded && !state.isLoading
+            status.setText(R.string.profile_loading)
+            status.isVisible = state.isLoading
             error.text = state.formError?.let(::getString).orEmpty()
             error.isVisible = state.formError != null
-            retryButton.isVisible = !state.isLoaded && !state.isLoading
-            saveButton.isEnabled = state.canSave
-            saveButton.setText(
-                if (state.isSaving) R.string.profile_saving else R.string.profile_save
-            )
-            status.text = when {
-                state.isLoading -> getString(R.string.profile_loading)
-                state.isSaved -> getString(R.string.profile_saved)
-                else -> ""
-            }
-            status.isVisible = state.isLoading || state.isSaved
+            retry.isVisible = !state.isLoaded && !state.isLoading
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Reload the canonical profile after returning from its editor.
+        viewModel.loadProfile()
+    }
+
+    private fun showThemeDialog() {
+        val modes = listOf(AppTheme.SYSTEM, AppTheme.DARK, AppTheme.LIGHT)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.theme_dialog_title)
+            .setSingleChoiceItems(R.array.theme_options, modes.indexOf(ThemePreferences.read(this))) { dialog, which ->
+                val theme = modes[which]
+                ThemePreferences.save(this, theme)
+                dialog.dismiss()
+                AppCompatDelegate.setDefaultNightMode(theme.nightMode)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun confirmLogout() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.action_logout)
+            .setMessage(R.string.profile_logout_question)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.action_logout) { _, _ ->
+                AuthRepository().logout()
+                startActivity(Intent(this, LoginActivity::class.java).addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                ))
+                finish()
+            }
+            .show()
     }
 }

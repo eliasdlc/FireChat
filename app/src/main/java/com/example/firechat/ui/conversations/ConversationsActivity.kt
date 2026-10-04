@@ -14,23 +14,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
-import com.example.firechat.ui.auth.LoginActivity
 import com.example.firechat.ui.chat.ChatActivity
 import com.example.firechat.ui.profile.ProfileActivity
 import com.example.firechat.ui.users.UsersActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import androidx.appcompat.app.AppCompatDelegate
-import com.example.firechat.ui.theme.AppTheme
-import com.example.firechat.ui.theme.ThemePreferences
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 
@@ -79,24 +73,6 @@ class ConversationsActivity : AppCompatActivity() {
         askNotificationPermission()
     }
 
-    private fun showThemeDialog() {
-        val modes = listOf(AppTheme.SYSTEM, AppTheme.DARK, AppTheme.LIGHT)
-        val selectedIndex = modes.indexOf(ThemePreferences.read(this))
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.theme_dialog_title)
-            .setSingleChoiceItems(R.array.theme_options, selectedIndex) { dialog, which ->
-                val selected = modes[which]
-
-                ThemePreferences.save(this, selected)
-                dialog.dismiss()
-                AppCompatDelegate.setDefaultNightMode(selected.nightMode)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_conversations, menu)
         return true
@@ -107,23 +83,7 @@ class ConversationsActivity : AppCompatActivity() {
             startActivity(Intent(this, ProfileActivity::class.java))
             true
         }
-        R.id.action_logout -> {
-            viewModel.logout()
-            openLogin()
-            true
-        }
-        R.id.action_theme -> {
-            showThemeDialog()
-            true
-        }
-
         else -> super.onOptionsItemSelected(item)
-    }
-
-    private fun openLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(intent)
     }
 
     private fun askNotificationPermission() {

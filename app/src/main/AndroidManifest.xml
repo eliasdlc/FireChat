@@ -41,6 +41,12 @@
             android:parentActivityName=".ui.conversations.ConversationsActivity" />
 
         <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.profile.ProfileActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false"
             android:parentActivityName=".ui.conversations.ConversationsActivity"
