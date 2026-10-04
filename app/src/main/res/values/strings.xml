@@ -108,4 +108,20 @@
     <string name="accent_amber">Ámbar</string>
     <string name="accent_teal">Turquesa</string>
     <string name="accent_selected">%1$s, seleccionado</string>
+    <string name="wallpaper_default_title">Fondo predeterminado</string>
+    <string name="wallpaper_chat_title">Fondo de este chat</string>
+    <string name="wallpaper_default_description">Se usa en los chats que no tienen un fondo propio. Se guarda para tu cuenta en este dispositivo.</string>
+    <string name="wallpaper_chat_description">Solo cambia este chat, para tu cuenta en este dispositivo. Elige un fondo y aplica el cambio.</string>
+    <string name="wallpaper_apply">Aplicar fondo</string>
+    <string name="wallpaper_restore_original">Restaurar fondo original</string>
+    <string name="wallpaper_use_default">Usar fondo predeterminado</string>
+    <string name="wallpaper_inherited">Fondo predeterminado: %1$s</string>
+    <string name="wallpaper_original">Original</string>
+    <string name="wallpaper_dots">Puntos</string>
+    <string name="wallpaper_grid">Cuadrícula</string>
+    <string name="wallpaper_sage">Salvia</string>
+    <string name="wallpaper_sand">Arena</string>
+    <string name="wallpaper_lavender">Lavanda</string>
+    <string name="wallpaper_preview_received">¿Qué te parece este fondo?</string>
+    <string name="wallpaper_preview_sent">¡Me gusta cómo se ve!</string>
 </resources>

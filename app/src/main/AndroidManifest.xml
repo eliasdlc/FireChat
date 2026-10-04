@@ -58,6 +58,8 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:parentActivityName=".ui.chat.ChatActivity" />
 
+        <activity android:name=".ui.wallpaper.WallpaperActivity" android:exported="false" />
+
         <activity
             android:name=".ui.theme.AppearanceActivity"
             android:exported="false"

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_arrow_back" app:navigationContentDescription="@string/navigate_back" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="@dimen/screen_margin">
+            <TextView android:id="@+id/wallpaperDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MyChat.Body" />
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l" android:columnCount="2">
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperOriginal" style="@style/Widget.MyChat.Button.AccentChoice" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperDots" style="@style/Widget.MyChat.Button.AccentChoice" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperGrid" style="@style/Widget.MyChat.Button.AccentChoice" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperSage" style="@style/Widget.MyChat.Button.AccentChoice" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperSand" style="@style/Widget.MyChat.Button.AccentChoice" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperLavender" style="@style/Widget.MyChat.Button.AccentChoice" />
+            </GridLayout>
+            <TextView android:id="@+id/wallpaperSelection" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m" android:textAppearance="@style/TextAppearance.MyChat.Label" android:accessibilityLiveRegion="polite" />
+            <LinearLayout android:id="@+id/wallpaperPreview" android:layout_width="match_parent" android:layout_height="240dp"
+                android:layout_marginTop="@dimen/space_m" android:padding="@dimen/space_l" android:orientation="vertical" android:gravity="center_vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:background="@drawable/bg_bubble_received" android:padding="@dimen/space_m"
+                    android:text="@string/wallpaper_preview_received" android:textColor="@color/ink" android:textSize="@dimen/text_body" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/space_m" android:background="@drawable/bg_bubble_sent" android:padding="@dimen/space_m"
+                    android:text="@string/wallpaper_preview_sent" android:textColor="?attr/colorOnPrimary" android:textSize="@dimen/text_body" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/wallpaperResetButton"
+                style="@style/Widget.MyChat.Button.Text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/space_m" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/applyWallpaperButton"
+                style="@style/Widget.MyChat.Button" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m" android:text="@string/wallpaper_apply" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,6 +1,9 @@
 package com.example.firechat.ui.theme
 
 import android.content.res.Configuration
+import com.example.firechat.data.repository.AuthRepository
+import com.example.firechat.ui.wallpaper.WallpaperActivity
+import com.example.firechat.ui.wallpaper.WallpaperPreferences
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -38,6 +41,7 @@ class AppearanceActivity : ThemedActivity() {
             AppTheme.LIGHT -> R.string.theme_light
             AppTheme.DARK -> R.string.theme_dark
         })
+        findViewById<View>(R.id.defaultWallpaperRow).setOnClickListener { startActivity(WallpaperActivity.newIntent(this)) }
         val selected = ThemePreferences.readAccent(this)
         val buttons = listOf(
             R.id.accentBlue to AppAccent.BLUE, R.id.accentGreen to AppAccent.GREEN,
@@ -62,6 +66,13 @@ class AppearanceActivity : ThemedActivity() {
             isEnabled = selected != AppAccent.BLUE
             setOnClickListener { selectAccent(AppAccent.BLUE) }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val uid = AuthRepository().currentUserId.orEmpty()
+        findViewById<View>(R.id.defaultWallpaperRow).visibility = if (uid.isBlank()) View.GONE else View.VISIBLE
+        findViewById<TextView>(R.id.defaultWallpaperValue).setText(WallpaperPreferences(this).default(uid).labelRes)
     }
 
     private fun selectAccent(accent: AppAccent) {

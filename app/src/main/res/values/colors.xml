@@ -19,4 +19,8 @@
     <color name="on_amber">#FFFFFF</color>
     <color name="ac_teal">#007C83</color>
     <color name="on_teal">#FFFFFF</color>
+    <color name="wallpaper_sage">#E8F0E9</color>
+    <color name="wallpaper_sand">#F4EDDF</color>
+    <color name="wallpaper_lavender">#EFEBF6</color>
+    <color name="wallpaper_pattern">#182E384D</color>
 </resources>

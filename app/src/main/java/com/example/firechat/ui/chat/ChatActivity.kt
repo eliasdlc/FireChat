@@ -3,6 +3,9 @@ package com.example.firechat.ui.chat
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.example.firechat.ui.wallpaper.WallpaperActivity
+import com.example.firechat.ui.wallpaper.WallpaperDrawable
+import com.example.firechat.ui.wallpaper.WallpaperPreferences
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
@@ -46,6 +49,17 @@ class ChatActivity : ThemedActivity() {
             .uppercase()
             .ifBlank { "?" }
         toolbar.setNavigationOnClickListener { finish() }
+        toolbar.menu.add(0, R.id.action_chat_wallpaper, 0, R.string.wallpaper_chat_title).apply {
+            setIcon(R.drawable.ic_wallpaper)
+            setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_ALWAYS)
+            isEnabled = viewModel.myUid.isNotBlank() && viewModel.recipientId.isNotBlank()
+        }
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_chat_wallpaper) {
+                startActivity(WallpaperActivity.newIntent(this, viewModel.chatId))
+                true
+            } else false
+        }
         findViewById<View>(R.id.chatProfileHeader).apply {
             isEnabled = viewModel.recipientId.isNotBlank()
             contentDescription = getString(R.string.view_user_profile, viewModel.recipientName)
@@ -89,7 +103,12 @@ class ChatActivity : ThemedActivity() {
         }
     }
 
-    override fun onResume() { super.onResume(); viewModel.chatResumed() }
+    override fun onResume() {
+        super.onResume()
+        val wallpaper = WallpaperPreferences(this).resolve(viewModel.myUid, viewModel.chatId)
+        findViewById<View>(R.id.chatWallpaper).background = WallpaperDrawable(this, wallpaper)
+        viewModel.chatResumed()
+    }
 
     override fun onPause() { viewModel.chatPaused(); super.onPause() }
 
