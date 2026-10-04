@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -31,8 +32,16 @@ class ChatActivity : AppCompatActivity() {
         val messageList = findViewById<RecyclerView>(R.id.messageList)
         val messageInput = findViewById<EditText>(R.id.messageInput)
         val sendButton = findViewById<ImageButton>(R.id.sendButton)
+        val chatName = findViewById<TextView>(R.id.chatName)
+        val chatAvatar = findViewById<TextView>(R.id.chatAvatar)
 
-        toolbar.title = viewModel.recipientName
+        toolbar.title = ""
+        chatName.text = viewModel.recipientName
+        chatAvatar.text = viewModel.recipientName
+            .trim()
+            .take(1)
+            .uppercase()
+            .ifBlank { "?" }
         toolbar.setNavigationOnClickListener { finish() }
 
         val adapter = MessageAdapter(viewModel.myUid)
