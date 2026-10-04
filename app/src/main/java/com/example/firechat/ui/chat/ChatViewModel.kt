@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import android.app.Application
+import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,9 +15,12 @@ import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.UserRepository
 import com.example.firechat.data.repository.NicknameRepository
+import com.example.firechat.data.repository.TypingRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
 
@@ -39,6 +43,43 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
 
     val chatId: String = ChatRepository.chatIdFor(myUid, recipient.uid)
 
+    private val typing = TypingRepository()
+    private var idleTypingJob: Job? = null
+    private var lastTypingPublish = 0L
+    private var publishedTyping = false
+    private var chatActive = false
+    val recipientTyping: LiveData<Boolean> =
+        if (myUid.isNotBlank() && recipientId.isNotBlank() && myUid != recipientId)
+            typing.observe(chatId, recipientId).asLiveData()
+        else MutableLiveData(false)
+
+    fun chatResumed() { chatActive = true }
+
+    fun messageEdited(text: CharSequence?) {
+        if (!chatActive) return
+        if (text.isNullOrBlank()) { stopTyping(); return }
+        if (myUid.isBlank() || recipientId.isBlank() || myUid == recipientId || AuthRepository().currentUserId != myUid) return
+        val now = SystemClock.elapsedRealtime()
+        if (!publishedTyping || now - lastTypingPublish >= TYPING_THROTTLE_MS) {
+            typing.publish(chatId, myUid)
+            lastTypingPublish = now
+            publishedTyping = true
+        }
+        idleTypingJob?.cancel()
+        idleTypingJob = viewModelScope.launch { delay(TYPING_IDLE_MS); stopTyping() }
+    }
+
+    fun chatPaused() { chatActive = false; stopTyping() }
+
+    private fun stopTyping() {
+        idleTypingJob?.cancel()
+        idleTypingJob = null
+        if (publishedTyping && AuthRepository().currentUserId == myUid) typing.clear(chatId, myUid)
+        publishedTyping = false
+    }
+
+    override fun onCleared() { stopTyping() }
+
     private var me: User? = null
 
     private val _uiState = MutableLiveData(ChatUiState())
@@ -51,6 +92,7 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
     fun sendText(text: String) {
         val trimmed = text.trim()
         if (trimmed.isEmpty()) return
+        stopTyping()
         viewModelScope.launch {
             try {
                 chatRepository.sendText(chatId, sender(), recipient, trimmed)
@@ -62,6 +104,11 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
 
     fun errorShown() {
         _uiState.value = _uiState.value?.copy(error = null)
+    }
+
+    private companion object {
+        const val TYPING_THROTTLE_MS = 2_000L
+        const val TYPING_IDLE_MS = 3_000L
     }
 
     private suspend fun sender(): User {

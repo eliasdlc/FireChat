@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
@@ -34,6 +35,7 @@ class ChatActivity : AppCompatActivity() {
         val messageInput = findViewById<EditText>(R.id.messageInput)
         val sendButton = findViewById<ImageButton>(R.id.sendButton)
         val chatName = findViewById<TextView>(R.id.chatName)
+        val typingBubble = findViewById<TypingBubbleView>(R.id.typingBubble)
         val chatAvatar = findViewById<TextView>(R.id.chatAvatar)
 
         toolbar.title = ""
@@ -52,6 +54,7 @@ class ChatActivity : AppCompatActivity() {
             }
         }
         viewModel.recipientDisplayName.observe(this) { displayName ->
+            typingBubble.contentDescription = getString(R.string.contact_typing, displayName)
             chatName.text = displayName
             chatAvatar.text = displayName.trim().take(1).uppercase().ifBlank { "?" }
             findViewById<View>(R.id.chatProfileHeader).contentDescription = getString(R.string.view_user_profile, displayName)
@@ -63,12 +66,15 @@ class ChatActivity : AppCompatActivity() {
 
         messageInput.doAfterTextChanged { text ->
             sendButton.isEnabled = !text.isNullOrBlank()
+            viewModel.messageEdited(text)
         }
         sendButton.isEnabled = false
         sendButton.setOnClickListener {
             viewModel.sendText(messageInput.text.toString())
             messageInput.text?.clear()
         }
+
+        viewModel.recipientTyping.observe(this) { typingBubble.isVisible = it }
 
         viewModel.messages.observe(this) { list ->
             adapter.submitList(list) {
@@ -82,6 +88,10 @@ class ChatActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onResume() { super.onResume(); viewModel.chatResumed() }
+
+    override fun onPause() { viewModel.chatPaused(); super.onPause() }
 
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"

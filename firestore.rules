@@ -21,6 +21,17 @@ service cloud.firestore {
         && request.resource.data.participants.size() == 2
         && request.resource.data.participants.hasAll(chatId.split('_'));
 
+      match /typing/{uid} {
+        allow read: if isParticipant(chatId);
+        allow create, update: if isParticipant(chatId) && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['updatedAt', 'expiresAt'])
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.expiresAt is timestamp
+          && request.resource.data.expiresAt > request.time
+          && request.resource.data.expiresAt <= request.time + duration.value(15, 's');
+        allow delete: if isParticipant(chatId) && request.auth.uid == uid;
+      }
+
       match /messages/{messageId} {
         allow read: if isParticipant(chatId);
         allow create: if isParticipant(chatId)
