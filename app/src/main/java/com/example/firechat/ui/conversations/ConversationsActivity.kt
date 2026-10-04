@@ -26,6 +26,11 @@ import com.example.firechat.ui.users.UsersActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import androidx.appcompat.app.AppCompatDelegate
+import com.example.firechat.ui.theme.AppTheme
+import com.example.firechat.ui.theme.ThemePreferences
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 
 
 class ConversationsActivity : AppCompatActivity() {
@@ -73,6 +78,24 @@ class ConversationsActivity : AppCompatActivity() {
         askNotificationPermission()
     }
 
+    private fun showThemeDialog() {
+        val modes = listOf(AppTheme.SYSTEM, AppTheme.DARK, AppTheme.LIGHT)
+        val selectedIndex = modes.indexOf(ThemePreferences.read(this))
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.theme_dialog_title)
+            .setSingleChoiceItems(R.array.theme_options, selectedIndex) { dialog, which ->
+                val selected = modes[which]
+
+                ThemePreferences.save(this, selected)
+                dialog.dismiss()
+                AppCompatDelegate.setDefaultNightMode(selected.nightMode)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_conversations, menu)
         return true
@@ -84,6 +107,11 @@ class ConversationsActivity : AppCompatActivity() {
             openLogin()
             true
         }
+        R.id.action_theme -> {
+            showThemeDialog()
+            true
+        }
+
         else -> super.onOptionsItemSelected(item)
     }
 

@@ -1,3 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="bg">#121418</color>
+    <color name="sf">#1C2028</color>
+    <color name="sf2">#2B313D</color>
+    <color name="ink">#F5F7FA</color>
+    <color name="body">#D5DAE3</color>
+    <color name="mute">#A5AEBD</color>
+    <color name="ac">#82AAFF</color>
+    <color name="on">#0B1B3D</color>
+    <color name="error">#FFB4AB</color>
 </resources>

@@ -51,4 +51,17 @@
     <string name="send">Enviar</string>
     <string name="error_loading_messages">No se pudieron cargar los mensajes</string>
     <string name="error_sending_message">No se pudo enviar el mensaje</string>
+
+    <string name="action_theme">Apariencia</string>
+    <string name="theme_dialog_title">Modo de apariencia</string>
+    <string name="theme_system">Usar configuración del sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+
+    <string-array name="theme_options">
+        <item>@string/theme_system</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_light</item>
+    </string-array>
+
 </resources>
