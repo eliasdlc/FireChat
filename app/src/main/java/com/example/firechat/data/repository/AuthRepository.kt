@@ -26,6 +26,7 @@ class AuthRepository(
     }
 
     fun logout() {
+        PushTokenRepository().unregister()
         auth.signOut()
     }
 }

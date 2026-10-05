@@ -10,6 +10,31 @@ service cloud.firestore {
       return signedIn() && request.auth.uid in chatId.split('_');
     }
 
+    // Text messages: no type (older clients) or type text, 1 to 4000 characters.
+    function validText(data) {
+      return (!('type' in data) || data.type == 'text')
+        && data.text.size() > 0
+        && data.text.size() <= 4000;
+    }
+
+    // Media files live under chats/{chatId}/{senderUid}/ in Storage.
+    function ownMediaPath(url, chatId) {
+      return url is string
+        && url.matches('gs://[^/]+/chats/' + chatId + '/' + request.auth.uid + '/[^/]+');
+    }
+
+    // Image and video messages point at the sender's own upload in this chat.
+    function validMedia(data, chatId) {
+      return data.type in ['image', 'video']
+        && data.text == ''
+        && ownMediaPath(data.mediaUrl, chatId)
+        && (data.type == 'image' || ownMediaPath(data.thumbUrl, chatId));
+    }
+
+    match /fcmTokens/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
     match /users/{uid} {
       allow read: if signedIn();
       allow create, update: if signedIn() && request.auth.uid == uid;
@@ -61,8 +86,7 @@ service cloud.firestore {
           && request.resource.data.senderId == request.auth.uid
           && request.resource.data.createdAt == request.time
           && request.resource.data.text is string
-          && request.resource.data.text.size() > 0
-          && request.resource.data.text.size() <= 4000;
+          && (validText(request.resource.data) || validMedia(request.resource.data, chatId));
       }
     }
   }

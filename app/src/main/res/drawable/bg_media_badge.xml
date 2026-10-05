@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Translucent pill over a photo or video frame; stays dark in both modes so it reads over any picture. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/media_badge" />
+    <corners android:radius="999dp" />
+</shape>

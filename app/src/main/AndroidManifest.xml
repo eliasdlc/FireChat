@@ -70,6 +70,26 @@
             android:parentActivityName=".ui.profile.ProfileActivity" />
 
         <activity
+            android:name=".ui.chat.MediaViewerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.chat.ChatActivity" />
+
+        <service
+            android:name=".notifications.MyChatMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="messages" />
+
+        <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false"
             android:parentActivityName=".ui.conversations.ConversationsActivity"

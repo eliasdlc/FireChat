@@ -10,6 +10,9 @@
     <color name="on">#FFFFFFFF</color>
     <color name="ln">#0F15171C</color>
     <color name="ln2">#2B15171C</color>
+    <color name="viewer_bg">#FF000000</color>
+    <color name="media_badge">#99000000</color>
+    <color name="media_badge_ink">#FFFFFFFF</color>
     <color name="error">#FFD92D20</color>
     <color name="ac_green">#147D51</color>
     <color name="on_green">#FFFFFF</color>

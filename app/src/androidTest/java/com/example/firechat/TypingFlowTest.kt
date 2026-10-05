@@ -216,6 +216,7 @@ class TypingFlowTest {
             peerTyping.clear(chatId, peerUid)
             awaitBubble(scenario, false)
             waitUntil { onView(withId(R.id.text)).check(matches(withText("Ya terminé de escribir"))) }
+            onView(withId(R.id.sender)).check(matches(withText("Camila Prueba")))
             capture("typing-message-received")
         }
     }

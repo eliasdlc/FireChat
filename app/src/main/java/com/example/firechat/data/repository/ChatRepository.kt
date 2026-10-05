@@ -1,5 +1,6 @@
 package com.example.firechat.data.repository
 
+import com.example.firechat.data.media.OutgoingMedia
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.model.Message
 import com.example.firechat.data.model.User
@@ -58,13 +59,29 @@ class ChatRepository(
     }
 
     suspend fun sendText(chatId: String, sender: User, recipient: User, text: String) {
+        send(chatId, sender, recipient, Message(senderId = sender.uid, senderName = sender.name, text = text), text)
+    }
+
+    /** Writes a photo or video message whose files are already in Storage. */
+    suspend fun sendMedia(chatId: String, sender: User, recipient: User, media: OutgoingMedia, uploaded: ChatMediaRepository.Uploaded) {
+        val message = Message(
+            senderId = sender.uid, senderName = sender.name, type = media.type,
+            mediaUrl = uploaded.mediaUrl, thumbUrl = uploaded.thumbUrl,
+            mediaWidth = media.width, mediaHeight = media.height,
+            durationMs = (media as? OutgoingMedia.Video)?.durationMs ?: 0
+        )
+        send(chatId, sender, recipient, message, "")
+    }
+
+    /** Writes the message and the conversation summary the inbox lists, in one batch. */
+    private suspend fun send(chatId: String, sender: User, recipient: User, message: Message, preview: String) {
         val chatRef = chats.document(chatId)
         val messageRef = chatRef.collection(MESSAGES).document()
-        val message = Message(senderId = sender.uid, senderName = sender.name, text = text)
         val summary = mapOf(
             FIELD_PARTICIPANTS to listOf(sender.uid, recipient.uid),
             "participantNames" to mapOf(sender.uid to sender.name, recipient.uid to recipient.name),
-            "lastMessage" to text,
+            "lastMessage" to preview,
+            "lastMessageType" to message.type,
             "lastMessageAt" to FieldValue.serverTimestamp()
         )
         db.batch()

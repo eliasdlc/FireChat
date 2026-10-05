@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.data.model.Message
 import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.util.DateFormatter
 import com.google.android.material.color.MaterialColors
@@ -58,10 +59,11 @@ class ConversationAdapter(
             val otherName = nicknames[conversation.otherUid(myUid)] ?: conversation.otherName(myUid)
             name.text = otherName
             avatar.bind(otherName, photos[conversation.otherUid(myUid)])
-            lastMessage.text = if (conversation.lastMessageIsImage) {
-                context.getString(R.string.message_image_preview)
-            } else {
-                conversation.lastMessage
+            lastMessage.text = when {
+                conversation.lastMessageType == Message.TYPE_IMAGE || conversation.lastMessageIsImage ->
+                    context.getString(R.string.message_image_preview)
+                conversation.lastMessageType == Message.TYPE_VIDEO -> context.getString(R.string.message_video_preview)
+                else -> conversation.lastMessage
             }
             time.text = DateFormatter.conversationTime(context, conversation.lastMessageAt)
             val unread = row.unreadCount ?: 0

@@ -86,15 +86,44 @@
         android:accessibilityLiveRegion="polite"
         android:importantForAccessibility="yes"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/messageInput"
+        app:layout_constraintBottom_toTopOf="@id/uploadStatus"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/uploadStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginBottom="@dimen/space_s"
+        android:accessibilityLiveRegion="polite"
+        android:background="@drawable/bg_composer"
+        android:paddingHorizontal="@dimen/space_m"
+        android:paddingVertical="@dimen/space_xs"
+        android:textAppearance="@style/TextAppearance.MyChat.Caption"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/messageInput"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Enviando… 42%"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/attachButton"
+        android:layout_width="@dimen/touch_target"
+        android:layout_height="@dimen/touch_target"
+        android:layout_marginStart="@dimen/space_xs"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/attach_media"
+        android:src="@drawable/ic_attach"
+        app:layout_constraintBottom_toBottomOf="@id/messageInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/mute" />
 
     <EditText
         android:id="@+id/messageInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginStart="@dimen/space_xs"
         android:layout_marginEnd="@dimen/space_s"
         android:layout_marginBottom="@dimen/space_s"
         android:background="@drawable/bg_composer"
@@ -110,7 +139,7 @@
         android:textSize="@dimen/text_body"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sendButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/attachButton" />
 
     <ImageButton
         android:id="@+id/sendButton"
