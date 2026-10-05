@@ -22,6 +22,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.ui.profile.UserProfileActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
@@ -43,15 +44,11 @@ class ChatActivity : ThemedActivity() {
         val sendButton = findViewById<ImageButton>(R.id.sendButton)
         val chatName = findViewById<TextView>(R.id.chatName)
         val typingBubble = findViewById<TypingBubbleView>(R.id.typingBubble)
-        val chatAvatar = findViewById<TextView>(R.id.chatAvatar)
+        val chatAvatar = findViewById<AvatarView>(R.id.chatAvatar)
 
         toolbar.title = ""
         chatName.text = viewModel.recipientName
-        chatAvatar.text = viewModel.recipientName
-            .trim()
-            .take(1)
-            .uppercase()
-            .ifBlank { "?" }
+        chatAvatar.bind(viewModel.recipientName, null)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.menu.add(0, R.id.action_chat_wallpaper, 0, R.string.wallpaper_chat_title).apply {
             setIcon(R.drawable.ic_wallpaper)
@@ -74,8 +71,12 @@ class ChatActivity : ThemedActivity() {
         viewModel.recipientDisplayName.observe(this) { displayName ->
             typingBubble.contentDescription = getString(R.string.contact_typing, displayName)
             chatName.text = displayName
-            chatAvatar.text = displayName.trim().take(1).uppercase().ifBlank { "?" }
+            chatAvatar.bind(displayName, viewModel.recipientPhoto.value)
             findViewById<View>(R.id.chatProfileHeader).contentDescription = getString(R.string.view_user_profile, displayName)
+        }
+
+        viewModel.recipientPhoto.observe(this) { photo ->
+            chatAvatar.bind(chatName.text.toString(), photo)
         }
 
         val adapter = MessageAdapter(viewModel.myUid)

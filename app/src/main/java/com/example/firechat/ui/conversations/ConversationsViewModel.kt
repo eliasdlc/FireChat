@@ -5,6 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.map
+import androidx.lifecycle.distinctUntilChanged
+import com.example.firechat.data.repository.UserRepository
 import com.example.firechat.R
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.repository.AuthRepository
@@ -27,6 +31,15 @@ class ConversationsViewModel(application: Application) : AndroidViewModel(applic
         chatRepository.observeConversations(myUid)
             .catch { _error.value = R.string.error_loading_conversations }
             .asLiveData()
+
+    val photos: LiveData<Map<String, String?>> = conversations
+        .map { list -> list.map { it.otherUid(myUid) }.distinct().sorted() }
+        .distinctUntilChanged()
+        .switchMap { ids ->
+            UserRepository().observePhotos(ids)
+                .catch { emit(emptyMap()) }
+                .asLiveData()
+        }
 
     fun logout() {
         authRepository.logout()

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.data.model.User
 
 class UserAdapter(
@@ -33,7 +34,7 @@ class UserAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val avatar: TextView = itemView.findViewById(R.id.avatar)
+        private val avatar: AvatarView = itemView.findViewById(R.id.avatar)
         private val name: TextView = itemView.findViewById(R.id.name)
         private val email: TextView = itemView.findViewById(R.id.email)
 
@@ -41,7 +42,7 @@ class UserAdapter(
             val displayName = nicknames[user.uid] ?: user.name
             name.text = displayName
             email.text = user.email
-            avatar.text = displayName.take(1).uppercase()
+            avatar.bind(displayName, user.photoUrl)
             itemView.setOnClickListener { onClick(user) }
         }
     }

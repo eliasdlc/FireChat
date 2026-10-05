@@ -55,6 +55,7 @@ class ConversationsActivity : ThemedActivity() {
         conversationList.layoutManager = LinearLayoutManager(this)
         conversationList.adapter = adapter
         viewModel.nicknames.observe(this) { adapter.submitNicknames(it) }
+        viewModel.photos.observe(this) { adapter.submitPhotos(it) }
 
         newChatButton.setOnClickListener {
             startActivity(Intent(this, UsersActivity::class.java))

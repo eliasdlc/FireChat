@@ -41,6 +41,12 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
         .map { it[recipient.uid] ?: recipient.name }
         .asLiveData()
 
+    val recipientPhoto: LiveData<String?> =
+        if (recipientId.isNotBlank() && '/' !in recipientId)
+            userRepository.observeUser(recipientId).map { it?.photoUrl }
+                .catch { emit(null) }.asLiveData()
+        else MutableLiveData(null)
+
     val chatId: String = ChatRepository.chatIdFor(myUid, recipient.uid)
 
     private val typing = TypingRepository()

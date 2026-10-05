@@ -4,6 +4,8 @@ import com.example.firechat.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
@@ -26,6 +28,26 @@ class UserRepository(
         users.document(uid)
             .update(FIELD_NAME, name.trim())
             .await()
+    }
+
+    fun observeUser(uid: String): Flow<User?> = callbackFlow {
+        require(uid.isNotBlank() && '/' !in uid)
+        val registration = users.document(uid).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            trySend(snapshot?.toObject(User::class.java))
+        }
+        awaitClose { registration.remove() }
+    }
+
+    fun observePhotos(uids: List<String>): Flow<Map<String, String?>> {
+        val ids = uids.filter { it.isNotBlank() && '/' !in it }.distinct()
+        if (ids.isEmpty()) return flowOf(emptyMap())
+        return combine(ids.map(::observeUser)) { users ->
+            ids.zip(users.map { it?.photoUrl }).toMap()
+        }
     }
 
     fun observeUsers(excludeUid: String): Flow<List<User>> = callbackFlow {

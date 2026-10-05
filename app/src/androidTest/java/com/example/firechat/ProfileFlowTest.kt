@@ -463,6 +463,78 @@ class ProfileFlowTest {
         org.junit.Assert.assertTrue(denied.isFailure)
     }
 
+    @Test
+    fun qContactPhotoAppearsInListsAndChatAndClearsOnRebind() {
+        seedProfile()
+        val owner = User(uid, "Ana Prueba", email)
+        val url = runBlocking { ProfilePhotoRepository().update(uid,
+            com.example.firechat.ui.profile.ProfileImage.jpeg(context.contentResolver, createImage())) }
+        val viewerEmail = "viewer-${UUID.randomUUID().toString().take(8)}@firechat.test"
+        val viewerUid = runBlocking { checkNotNull(auth.createUserWithEmailAndPassword(viewerEmail, PASSWORD).await().user).uid }
+        val viewer = User(viewerUid, "Usuario de prueba", viewerEmail)
+        runBlocking {
+            UserRepository().createProfile(viewer)
+            com.example.firechat.data.repository.NicknameRepository(context).save(viewerUid, uid, "Mi amiga")
+            com.example.firechat.data.repository.ChatRepository().sendText(
+                com.example.firechat.data.repository.ChatRepository.chatIdFor(viewerUid, uid), viewer, owner, "Mensaje de prueba")
+        }
+        ActivityScenario.launch(ConversationsActivity::class.java).use { scenario ->
+            waitUntil {
+                var ready = false
+                scenario.onActivity {
+                    val list = it.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.conversationList)
+                    ready = list.findViewHolderForAdapterPosition(0)?.itemView
+                        ?.findViewById<AvatarView>(R.id.avatar)?.let(::avatarHasPhoto) == true
+                }
+                ready
+            }
+            android.os.SystemClock.sleep(1500)
+            onView(withId(R.id.name)).check(matches(org.hamcrest.Matchers.allOf(withText("Mi amiga"), isDisplayed())))
+            onView(withId(R.id.avatar)).check(matches(isDisplayed()))
+            capture("contact-photo-conversations")
+        }
+        ActivityScenario.launch<com.example.firechat.ui.chat.ChatActivity>(
+            com.example.firechat.ui.chat.ChatActivity.newIntent(context, uid, owner.name)).use { scenario ->
+            waitUntil {
+                var ready = false
+                scenario.onActivity { ready = avatarHasPhoto(it.findViewById(R.id.chatAvatar)) }
+                ready
+            }
+            onView(withId(R.id.chatName)).check(matches(withText("Mi amiga")))
+            android.os.SystemClock.sleep(1500)
+            capture("contact-photo-header")
+        }
+        ActivityScenario.launch(com.example.firechat.ui.users.UsersActivity::class.java).use { scenario ->
+            waitUntil {
+                var ready = false
+                scenario.onActivity {
+                    val list = it.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.userList)
+                    val adapter = list.adapter as com.example.firechat.ui.users.UserAdapter
+                    val position = adapter.currentList.indexOfFirst { user -> user.uid == uid }
+                    if (position >= 0) {
+                        list.scrollToPosition(position)
+                        ready = list.findViewHolderForAdapterPosition(position)?.itemView
+                            ?.findViewById<AvatarView>(R.id.avatar)?.let(::avatarHasPhoto) == true
+                    }
+                }
+                ready
+            }
+            android.os.SystemClock.sleep(1500)
+            capture("contact-photo-users")
+            scenario.onActivity {
+                val list = it.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.userList)
+                val adapter = list.adapter as com.example.firechat.ui.users.UserAdapter
+                val position = adapter.currentList.indexOfFirst { user -> user.uid == uid }
+                val holder = list.findViewHolderForAdapterPosition(position) as com.example.firechat.ui.users.UserAdapter.ViewHolder
+                holder.bind(User("without-photo", "Sin foto", "fixture@firechat.test"))
+                val avatar = holder.itemView.findViewById<AvatarView>(R.id.avatar)
+                assertFalse(avatarHasPhoto(avatar))
+                assertEquals("S", (avatar.getChildAt(0) as TextView).text.toString())
+            }
+        }
+        assertEquals(url, runBlocking { db.collection("users").document(uid).get(Source.SERVER).await().getString("photoUrl") })
+    }
+
     private fun avatarHasPhoto(view: AvatarView): Boolean = (view.getChildAt(1) as ImageView).drawable != null
 
     private fun createImage(): Uri {

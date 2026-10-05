@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.data.model.Conversation
 import com.example.firechat.util.DateFormatter
 
@@ -16,6 +17,14 @@ class ConversationAdapter(
     private val onClick: (Conversation) -> Unit
 ) : ListAdapter<Conversation, ConversationAdapter.ViewHolder>(Diff) {
     private var nicknames: Map<String, String> = emptyMap()
+
+    private var photos: Map<String, String?> = emptyMap()
+
+    fun submitPhotos(value: Map<String, String?>) {
+        if (photos == value) return
+        photos = value
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     fun submitNicknames(value: Map<String, String>) {
         if (nicknames == value) return
@@ -35,7 +44,7 @@ class ConversationAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val avatar: TextView = itemView.findViewById(R.id.avatar)
+        private val avatar: AvatarView = itemView.findViewById(R.id.avatar)
         private val name: TextView = itemView.findViewById(R.id.name)
         private val time: TextView = itemView.findViewById(R.id.time)
         private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
@@ -44,7 +53,7 @@ class ConversationAdapter(
             val context = itemView.context
             val otherName = nicknames[conversation.otherUid(myUid)] ?: conversation.otherName(myUid)
             name.text = otherName
-            avatar.text = otherName.take(1).uppercase()
+            avatar.bind(otherName, photos[conversation.otherUid(myUid)])
             lastMessage.text = if (conversation.lastMessageIsImage) {
                 context.getString(R.string.message_image_preview)
             } else {
