@@ -1,5 +1,6 @@
 package com.example.firechat.ui.conversations
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
 import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.util.DateFormatter
+import com.google.android.material.color.MaterialColors
 
 class ConversationAdapter(
     private val myUid: String,
@@ -66,6 +68,14 @@ class ConversationAdapter(
             badge.visibility = if (unread > 0) View.VISIBLE else View.GONE
             badge.text = if (unread > 99) "99+" else unread.toString()
             badge.contentDescription = context.resources.getQuantityString(R.plurals.unread_messages_count, unread, unread)
+            // Un chat con mensajes sin leer destaca la hora con el acento y el último mensaje en tinta.
+            val hasUnread = unread > 0
+            time.setTextColor(
+                if (hasUnread) MaterialColors.getColor(time, androidx.appcompat.R.attr.colorPrimary)
+                else context.getColor(R.color.mute)
+            )
+            lastMessage.setTextColor(context.getColor(if (hasUnread) R.color.ink else R.color.mute))
+            lastMessage.setTypeface(null, if (hasUnread) Typeface.BOLD else Typeface.NORMAL)
             itemView.setOnClickListener { onClick(conversation) }
             itemView.setOnLongClickListener { onLongClick(row); true }
         }

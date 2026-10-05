@@ -66,12 +66,10 @@ class MessageAdapter(
 
     inner class ReceivedHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val sender: TextView = itemView.findViewById(R.id.sender)
         private val text: TextView = itemView.findViewById(R.id.text)
         private val time: TextView = itemView.findViewById(R.id.time)
 
         fun bind(message: Message) {
-            sender.text = message.senderName
             text.text = message.text
             time.text = DateFormatter.messageTime(itemView.context, message.createdAt)
         }

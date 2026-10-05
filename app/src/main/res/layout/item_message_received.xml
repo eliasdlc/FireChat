@@ -22,15 +22,6 @@
         app:layout_constraintWidth_max="@dimen/message_max_width">
 
         <TextView
-            android:id="@+id/sender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MyChat.Caption"
-            android:textColor="@color/ink"
-            android:textStyle="bold"
-            tools:text="Ana Pérez" />
-
-        <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

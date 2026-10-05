@@ -14,7 +14,7 @@ import androidx.core.view.isVisible
 import com.example.firechat.R
 import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.data.repository.AuthRepository
-import com.example.firechat.ui.auth.LoginActivity
+import com.example.firechat.ui.auth.WelcomeActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -68,7 +68,7 @@ class ProfileActivity : ThemedActivity() {
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.action_logout) { _, _ ->
                 AuthRepository().logout()
-                startActivity(Intent(this, LoginActivity::class.java).addFlags(
+                startActivity(Intent(this, WelcomeActivity::class.java).addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 ))
                 finish()

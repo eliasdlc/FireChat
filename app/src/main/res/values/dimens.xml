@@ -14,6 +14,7 @@
     <dimen name="radius_bubble_tail">6dp</dimen>
     <dimen name="radius_image">12dp</dimen>
     <dimen name="radius_pill">27dp</dimen>
+    <dimen name="radius_card">22dp</dimen>
 
     <!-- Tamaños -->
     <dimen name="button_height">54dp</dimen>

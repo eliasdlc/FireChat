@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">FireChat</string>
 
-    <string name="login_title">Bienvenido a FireChat</string>
+    <string name="welcome_subtitle">Conversa en tiempo real con las personas que te importan</string>
+
+    <string name="login_title">Bienvenido de nuevo</string>
     <string name="login_subtitle">Inicia sesión para seguir conversando</string>
     <string name="login_button">Iniciar sesión</string>
     <string name="login_loading">Entrando…</string>

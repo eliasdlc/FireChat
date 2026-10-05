@@ -104,7 +104,7 @@ class ConversationsActivity : ThemedActivity() {
             toolbar.title = getString(if (state.archived) R.string.archived_title else R.string.app_name)
             toolbar.navigationIcon = if (state.archived) androidx.appcompat.content.res.AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back) else null
             back.isEnabled = state.archived
-            archivedEntry.isVisible = !state.archived
+            archivedEntry.isVisible = !state.archived && state.archivedCount > 0
             archivedEntry.contentDescription = resources.getQuantityString(R.plurals.archived_chats_count, state.archivedCount, state.archivedCount)
             findViewById<TextView>(R.id.archivedCount).text = getString(R.string.inbox_number, state.archivedCount)
             if (search.text.toString() != state.query) search.setText(state.query)

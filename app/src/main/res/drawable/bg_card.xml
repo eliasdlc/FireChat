@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Superficie que agrupa filas relacionadas, como en Ajustes. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/sf" />
+    <corners android:radius="@dimen/radius_card" />
+</shape>
