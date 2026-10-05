@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.example.firechat.ui.wallpaper.WallpaperActivity
-import com.example.firechat.ui.wallpaper.WallpaperDrawable
+import com.example.firechat.ui.wallpaper.WallpaperRenderer
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import com.example.firechat.ui.wallpaper.WallpaperPreferences
 import android.view.View
 import android.widget.EditText
@@ -25,6 +28,7 @@ import com.google.android.material.appbar.MaterialToolbar
 
 class ChatActivity : ThemedActivity() {
 
+    private var wallpaperJob: Job? = null
     private val viewModel: ChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +110,10 @@ class ChatActivity : ThemedActivity() {
     override fun onResume() {
         super.onResume()
         val wallpaper = WallpaperPreferences(this).resolve(viewModel.myUid, viewModel.chatId)
-        findViewById<View>(R.id.chatWallpaper).background = WallpaperDrawable(this, wallpaper)
+        wallpaperJob?.cancel()
+        wallpaperJob = lifecycleScope.launch {
+            findViewById<View>(R.id.chatWallpaper).background = WallpaperRenderer.load(this@ChatActivity, viewModel.myUid, wallpaper)
+        }
         viewModel.chatResumed()
     }
 

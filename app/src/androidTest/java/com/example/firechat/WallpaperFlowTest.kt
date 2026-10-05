@@ -25,6 +25,7 @@ import com.example.firechat.ui.theme.AppAccent
 import com.example.firechat.ui.theme.AppTheme
 import com.example.firechat.ui.theme.AppearanceActivity
 import com.example.firechat.ui.theme.ThemePreferences
+import com.example.firechat.ui.wallpaper.WallpaperSelection
 import com.example.firechat.ui.wallpaper.ChatWallpaper
 import com.example.firechat.ui.wallpaper.WallpaperActivity
 import com.example.firechat.ui.wallpaper.WallpaperDrawable
@@ -93,13 +94,13 @@ class WallpaperFlowTest {
         ActivityScenario.launch(AppearanceActivity::class.java).use {
             onView(withId(R.id.defaultWallpaperRow)).perform(scrollTo(), click())
             choose(ChatWallpaper.SAGE)
-            assertEquals(ChatWallpaper.ORIGINAL, preferences.default(uid))
+            assertEquals(ChatWallpaper.ORIGINAL, (preferences.default(uid) as WallpaperSelection.Preset).wallpaper)
             capture("wallpaper-default-preview")
             apply()
             onView(withId(R.id.defaultWallpaperValue)).check(matches(withText(R.string.wallpaper_sage)))
             capture("wallpaper-appearance")
         }
-        assertEquals(ChatWallpaper.SAGE, preferences.default(uid))
+        assertEquals(ChatWallpaper.SAGE, (preferences.default(uid) as WallpaperSelection.Preset).wallpaper)
         assertEquals(AppAccent.GREEN, ThemePreferences.readAccent(context))
         verifyChat(peer, ChatWallpaper.SAGE, "wallpaper-inherited-chat-a")
         verifyChat(otherPeer, ChatWallpaper.SAGE, "wallpaper-inherited-chat-b")
@@ -116,7 +117,7 @@ class WallpaperFlowTest {
             onView(withId(R.id.wallpaperSelection)).check(matches(withText(context.getString(R.string.wallpaper_inherited, context.getString(R.string.wallpaper_dots)))))
             choose(ChatWallpaper.SAND)
             onView(withContentDescription(R.string.navigate_back)).perform(click())
-            assertNull(preferences.chatOverride(uid, chatA))
+            assertNull((preferences.chatOverride(uid, chatA) as? WallpaperSelection.Preset)?.wallpaper)
             scenario.onActivity { assertWallpaper(it.findViewById(R.id.chatWallpaper), ChatWallpaper.DOTS) }
             onView(withId(R.id.messageInput)).check(matches(withText("Borrador conservado")))
             openChatSelector()
@@ -127,8 +128,8 @@ class WallpaperFlowTest {
             onView(withId(R.id.messageInput)).check(matches(withText("Borrador conservado")))
             capture("wallpaper-custom-chat-draft")
         }
-        assertEquals(ChatWallpaper.LAVENDER, preferences.chatOverride(uid, chatA))
-        assertNull(preferences.chatOverride(uid, chatB))
+        assertEquals(ChatWallpaper.LAVENDER, (preferences.chatOverride(uid, chatA) as? WallpaperSelection.Preset)?.wallpaper)
+        assertNull((preferences.chatOverride(uid, chatB) as? WallpaperSelection.Preset)?.wallpaper)
         verifyChat(otherPeer, ChatWallpaper.DOTS, "wallpaper-unaffected-chat")
         assertEquals(before, runBlocking { db.collection("chats").document(chatA).collection("messages").get(Source.SERVER).await().documents.map { it.data } })
     }
@@ -145,7 +146,7 @@ class WallpaperFlowTest {
             onView(withId(R.id.wallpaperResetButton)).perform(scrollTo(), click())
             capture("wallpaper-use-default-preview")
             apply()
-            assertNull(preferences.chatOverride(uid, chatA))
+            assertNull((preferences.chatOverride(uid, chatA) as? WallpaperSelection.Preset)?.wallpaper)
             scenario.onActivity { assertWallpaper(it.findViewById(R.id.chatWallpaper), ChatWallpaper.SAND) }
             scenario.onActivity { it.startActivity(WallpaperActivity.newIntent(it)) }
             choose(ChatWallpaper.GRID); apply()
@@ -155,7 +156,7 @@ class WallpaperFlowTest {
         ActivityScenario.launch<WallpaperActivity>(WallpaperActivity.newIntent(context)).use {
             onView(withId(R.id.wallpaperResetButton)).perform(scrollTo(), click()); apply()
         }
-        assertEquals(ChatWallpaper.ORIGINAL, preferences.default(uid))
+        assertEquals(ChatWallpaper.ORIGINAL, (preferences.default(uid) as WallpaperSelection.Preset).wallpaper)
     }
 
     @Test
@@ -175,7 +176,7 @@ class WallpaperFlowTest {
                 }
                 scenario.recreate()
                 scenario.onActivity { assertWallpaper(it.findViewById(R.id.wallpaperPreview), ChatWallpaper.LAVENDER) }
-                assertEquals(ChatWallpaper.ORIGINAL, preferences.default(uid))
+                assertEquals(ChatWallpaper.ORIGINAL, (preferences.default(uid) as WallpaperSelection.Preset).wallpaper)
             }
             preferences.saveDefault(uid, ChatWallpaper.SAGE)
             verifyChat(peer, ChatWallpaper.SAGE, "wallpaper-chat-${mode.name.lowercase()}")
@@ -226,20 +227,32 @@ class WallpaperFlowTest {
         runBlocking { auth.signInWithEmailAndPassword(peerEmail, PASSWORD).await() }
         verifyChat(uid, ChatWallpaper.ORIGINAL, "wallpaper-other-account-original")
         ActivityScenario.launch<WallpaperActivity>(WallpaperActivity.newIntent(context, chatA)).use { choose(ChatWallpaper.GRID); apply() }
-        assertEquals(ChatWallpaper.GRID, preferences.resolve(peer, chatA))
+        assertEquals(ChatWallpaper.GRID, (preferences.resolve(peer, chatA) as WallpaperSelection.Preset).wallpaper)
         auth.signOut()
         runBlocking { auth.signInWithEmailAndPassword(email, PASSWORD).await() }
         verifyChat(peer, ChatWallpaper.LAVENDER, "wallpaper-owner-selection-retained")
         context.getSharedPreferences("wallpapers_$uid", Context.MODE_PRIVATE).edit()
             .putString("default", "REMOVED_PRESET").putString("chat_$chatB", "REMOVED_PRESET").commit()
-        assertEquals(ChatWallpaper.ORIGINAL, preferences.resolve(uid, chatB))
-        assertEquals(ChatWallpaper.LAVENDER, preferences.resolve(uid, chatA))
-        assertEquals(ChatWallpaper.ORIGINAL, preferences.resolve("", chatA))
+        assertEquals(ChatWallpaper.ORIGINAL, (preferences.resolve(uid, chatB) as WallpaperSelection.Preset).wallpaper)
+        assertEquals(ChatWallpaper.LAVENDER, (preferences.resolve(uid, chatA) as WallpaperSelection.Preset).wallpaper)
+        assertEquals(ChatWallpaper.ORIGINAL, (preferences.resolve("", chatA) as WallpaperSelection.Preset).wallpaper)
     }
 
     private fun openChatSelector() = onView(withId(R.id.action_chat_wallpaper)).perform(click())
-    private fun choose(wallpaper: ChatWallpaper) = onView(withId(buttonId(wallpaper))).perform(scrollTo(), click())
-    private fun apply() = onView(withId(R.id.applyWallpaperButton)).perform(scrollTo(), click())
+    private fun choose(wallpaper: ChatWallpaper) {
+        waitUntil { instrumentation.runOnMainSync {
+            assertTrue(androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).any { it is WallpaperActivity })
+        } }
+        onView(withId(buttonId(wallpaper))).perform(scrollTo(), click())
+    }
+    private fun apply() {
+        onView(withId(R.id.applyWallpaperButton)).perform(scrollTo(), click())
+        waitUntil { instrumentation.runOnMainSync {
+            assertFalse(androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).any { it is WallpaperActivity })
+        } }
+    }
     private fun buttonId(wallpaper: ChatWallpaper) = when (wallpaper) {
         ChatWallpaper.ORIGINAL -> R.id.wallpaperOriginal; ChatWallpaper.DOTS -> R.id.wallpaperDots
         ChatWallpaper.GRID -> R.id.wallpaperGrid; ChatWallpaper.SAGE -> R.id.wallpaperSage

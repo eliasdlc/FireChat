@@ -4,10 +4,16 @@
     <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_arrow_back" app:navigationContentDescription="@string/navigate_back" />
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+    <ScrollView android:id="@+id/wallpaperScroll" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:padding="@dimen/screen_margin">
             <TextView android:id="@+id/wallpaperDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MyChat.Body" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/chooseWallpaperImageButton"
+                style="@style/Widget.MyChat.Button" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l" android:text="@string/wallpaper_choose_image" />
+            <TextView android:id="@+id/wallpaperImageStatus" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:visibility="gone" android:accessibilityLiveRegion="polite" android:layout_marginTop="@dimen/space_s"
                 android:textAppearance="@style/TextAppearance.MyChat.Body" />
             <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_l" android:columnCount="2">
@@ -20,6 +26,14 @@
             </GridLayout>
             <TextView android:id="@+id/wallpaperSelection" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_m" android:textAppearance="@style/TextAppearance.MyChat.Label" android:accessibilityLiveRegion="polite" />
+            <LinearLayout android:id="@+id/wallpaperBrightnessControls" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone" android:layout_marginTop="@dimen/space_m">
+                <TextView android:id="@+id/wallpaperBrightnessValue" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MyChat.Label" android:labelFor="@id/wallpaperBrightnessSlider" android:text="@string/wallpaper_brightness" />
+                <com.google.android.material.slider.Slider android:id="@+id/wallpaperBrightnessSlider"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:valueFrom="0" android:valueTo="100"
+                    android:stepSize="1" android:value="100" android:saveEnabled="false" android:contentDescription="@string/wallpaper_brightness" />
+            </LinearLayout>
             <LinearLayout android:id="@+id/wallpaperPreview" android:layout_width="match_parent" android:layout_height="240dp"
                 android:layout_marginTop="@dimen/space_m" android:padding="@dimen/space_l" android:orientation="vertical" android:gravity="center_vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"

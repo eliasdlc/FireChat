@@ -11,6 +11,7 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.firechat.ui.wallpaper.WallpaperSelection
 import com.example.firechat.ui.wallpaper.ChatWallpaper
 import com.example.firechat.ui.wallpaper.WallpaperActivity
 import com.example.firechat.ui.wallpaper.WallpaperDrawable
@@ -54,8 +55,8 @@ class WallpaperPersistenceTest {
             onView(withId(R.id.applyWallpaperButton)).perform(scrollTo(), click())
         }
         val uid = checkNotNull(auth.currentUser).uid
-        assertEquals(ChatWallpaper.SAGE, WallpaperPreferences(context).default(uid))
-        assertEquals(ChatWallpaper.LAVENDER, WallpaperPreferences(context).chatOverride(uid, CHAT))
+        assertEquals(ChatWallpaper.SAGE, (WallpaperPreferences(context).default(uid) as WallpaperSelection.Preset).wallpaper)
+        assertEquals(ChatWallpaper.LAVENDER, (WallpaperPreferences(context).chatOverride(uid, CHAT) as? WallpaperSelection.Preset)?.wallpaper)
         Log.i("WallpaperPersistence", "Saved default and override in process ${Process.myPid()}")
     }
 
@@ -63,9 +64,9 @@ class WallpaperPersistenceTest {
     fun freshProcessRestoresSelection() {
         val uid = checkNotNull(auth.currentUser).uid
         val preferences = WallpaperPreferences(context)
-        assertEquals(ChatWallpaper.SAGE, preferences.default(uid))
-        assertEquals(ChatWallpaper.LAVENDER, preferences.resolve(uid, CHAT))
-        assertEquals(ChatWallpaper.SAGE, preferences.resolve(uid, "another-chat"))
+        assertEquals(ChatWallpaper.SAGE, (preferences.default(uid) as WallpaperSelection.Preset).wallpaper)
+        assertEquals(ChatWallpaper.LAVENDER, (preferences.resolve(uid, CHAT) as WallpaperSelection.Preset).wallpaper)
+        assertEquals(ChatWallpaper.SAGE, (preferences.resolve(uid, "another-chat") as WallpaperSelection.Preset).wallpaper)
         for ((chatId, expected) in listOf(null to ChatWallpaper.SAGE, CHAT to ChatWallpaper.LAVENDER)) {
             ActivityScenario.launch<WallpaperActivity>(WallpaperActivity.newIntent(context, chatId)).use { scenario ->
                 scenario.onActivity {

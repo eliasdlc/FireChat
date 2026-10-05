@@ -124,4 +124,12 @@
     <string name="wallpaper_lavender">Lavanda</string>
     <string name="wallpaper_preview_received">¿Qué te parece este fondo?</string>
     <string name="wallpaper_preview_sent">¡Me gusta cómo se ve!</string>
+    <string name="wallpaper_choose_image">Elegir imagen del dispositivo</string>
+    <string name="wallpaper_own_image">Imagen propia</string>
+    <string name="wallpaper_brightness">Brillo de la imagen</string>
+    <string name="wallpaper_brightness_value">Brillo de la imagen: %1$d%%</string>
+    <string name="wallpaper_image_loading">Preparando imagen…</string>
+    <string name="wallpaper_image_too_large">Elige una imagen de hasta 25 MB.</string>
+    <string name="wallpaper_image_error">No se pudo abrir la imagen. Elige otra e intenta nuevamente.</string>
+    <string name="wallpaper_save_error">No se pudo guardar el fondo. Intenta nuevamente.</string>
 </resources>
