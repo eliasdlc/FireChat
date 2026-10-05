@@ -1,3 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="bg">#121418</color>
+    <color name="sf">#1C2028</color>
+    <color name="sf2">#2B313D</color>
+    <color name="ink">#F5F7FA</color>
+    <color name="body">#D5DAE3</color>
+    <color name="mute">#A5AEBD</color>
+    <color name="ac">#82AAFF</color>
+    <color name="on">#0B1B3D</color>
+    <color name="ln">#14F5F7FA</color>
+    <color name="ln2">#2EF5F7FA</color>
+    <color name="error">#FFB4AB</color>
+    <color name="ac_green">#75D9A9</color>
+    <color name="on_green">#082C1D</color>
+    <color name="ac_violet">#C3AAFF</color>
+    <color name="on_violet">#24133F</color>
+    <color name="ac_rose">#FFABD0</color>
+    <color name="on_rose">#3B1028</color>
+    <color name="ac_amber">#F4C66A</color>
+    <color name="on_amber">#312300</color>
+    <color name="ac_teal">#74D8DE</color>
+    <color name="on_teal">#073034</color>
+    <color name="wallpaper_sage">#17261E</color>
+    <color name="wallpaper_sand">#2A241A</color>
+    <color name="wallpaper_lavender">#231E30</color>
+    <color name="wallpaper_pattern">#304C5666</color>
 </resources>

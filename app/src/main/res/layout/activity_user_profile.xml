@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.profile.UserProfileActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/navigate_back"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/user_profile_title" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/screen_margin"
+            android:paddingTop="@dimen/space_xxl"
+            android:paddingBottom="@dimen/space_xxl">
+
+            <LinearLayout
+                android:id="@+id/userProfileContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+                <com.example.firechat.ui.common.AvatarView
+                    android:id="@+id/userProfileAvatar"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/bg_avatar"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:textColor="@color/ink"
+                    android:textSize="48sp"
+                    tools:text="C" />
+                <TextView
+                    android:id="@+id/userProfileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_l"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MyChat.Display"
+                    tools:text="Camila Prueba" />
+                <TextView
+                    android:id="@+id/userProfilePublicName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_s"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MyChat.Caption"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/userProfileEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_s"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MyChat.Caption"
+                    android:textIsSelectable="true"
+                    tools:text="contacto@firechat.test" />
+
+                <LinearLayout
+                    android:id="@+id/nicknameEditor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xxl"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nickname_description"
+                        android:textAppearance="@style/TextAppearance.MyChat.Caption" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/nicknameLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_m"
+                        android:hint="@string/nickname_hint"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="40">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/nicknameInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="false"
+                            android:importantForAutofill="no"
+                            android:inputType="textPersonName|textCapWords"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/saveNicknameButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_m"
+                        android:enabled="false"
+                        android:text="@string/nickname_save" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/removeNicknameButton"
+                        style="@style/Widget.MyChat.Button.Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nickname_remove"
+                        android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/nicknameStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:accessibilityLiveRegion="polite"
+                        android:textAppearance="@style/TextAppearance.MyChat.Body"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/userProfileStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:accessibilityLiveRegion="polite"
+                android:text="@string/profile_loading"
+                android:textAppearance="@style/TextAppearance.MyChat.Body" />
+            <TextView
+                android:id="@+id/userProfileError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:accessibilityLiveRegion="polite"
+                android:textAppearance="@style/TextAppearance.MyChat.Body"
+                android:textColor="@color/error"
+                android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retryUserProfileButton"
+                style="@style/Widget.MyChat.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_retry"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

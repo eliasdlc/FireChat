@@ -21,24 +21,40 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="@dimen/message_max_width">
 
+        <com.example.firechat.ui.chat.ChatMediaView
+            android:id="@+id/media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/on"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/text_body"
             tools:text="Hola, ¿cómo estás?" />
 
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="end" android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/space_xs">
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginEnd="@dimen/space_s"
             android:alpha="0.75"
-            android:textColor="@color/on"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/text_caption"
             tools:text="10:24" />
+            <TextView android:id="@+id/readStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnPrimary" android:textSize="@dimen/text_caption" tools:text="✓✓ Leído" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

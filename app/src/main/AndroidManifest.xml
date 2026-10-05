@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".FireChatApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,9 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FireChat">
-
         <activity
-            android:name=".ui.conversations.ConversationsActivity"
+            android:name=".ui.auth.WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,9 +26,68 @@
         </activity>
 
         <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.conversations.ConversationsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.users.UsersActivity"
             android:exported="false"
             android:parentActivityName=".ui.conversations.ConversationsActivity" />
+
+        <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.profile.ProfileActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.conversations.ConversationsActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.profile.UserProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+            android:parentActivityName=".ui.chat.ChatActivity" />
+
+        <activity android:name=".ui.wallpaper.WallpaperActivity" android:exported="false" />
+
+        <activity
+            android:name=".ui.theme.AppearanceActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.profile.ProfileActivity" />
+
+        <activity
+            android:name=".ui.chat.MediaViewerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.chat.ChatActivity" />
+
+        <service
+            android:name=".notifications.MyChatMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="messages" />
 
         <activity
             android:name=".ui.chat.ChatActivity"

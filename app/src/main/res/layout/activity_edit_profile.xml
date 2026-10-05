@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.profile.EditProfileActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/navigate_back"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/profile_edit" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/screen_margin">
+
+            <com.example.firechat.ui.common.AvatarView
+                android:id="@+id/profileAvatar"
+                android:layout_width="@dimen/avatar_size"
+                android:layout_height="@dimen/avatar_size"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_avatar"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:textAppearance="@style/TextAppearance.MyChat.Heading"
+                tools:text="A" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/changePhotoButton"
+                style="@style/Widget.MyChat.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/profile_change_photo"
+                android:enabled="false" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:text="@string/profile_description"
+                android:textAppearance="@style/TextAppearance.MyChat.Body" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/profileNameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:hint="@string/hint_name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/profileNameInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName|textCapWords"
+                    android:maxLines="1"
+                    tools:text="Ana Prueba" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:labelFor="@id/profileEmail"
+                android:text="@string/hint_email"
+                android:textAppearance="@style/TextAppearance.MyChat.Label" />
+
+            <TextView
+                android:id="@+id/profileEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textAppearance="@style/TextAppearance.MyChat.Body"
+                android:textIsSelectable="true"
+                tools:text="perfil@firechat.test" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/profile_email_read_only"
+                android:textAppearance="@style/TextAppearance.MyChat.Caption" />
+
+            <TextView
+                android:id="@+id/profileError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:accessibilityLiveRegion="polite"
+                android:textAppearance="@style/TextAppearance.MyChat.Body"
+                android:textColor="@color/error"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/profileStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:accessibilityLiveRegion="polite"
+                android:textAppearance="@style/TextAppearance.MyChat.Body"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:enabled="false"
+                android:text="@string/profile_save" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retryProfileButton"
+                style="@style/Widget.MyChat.Button.Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_retry"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

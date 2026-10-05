@@ -8,11 +8,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.data.model.User
 
 class UserAdapter(
     private val onClick: (User) -> Unit
 ) : ListAdapter<User, UserAdapter.ViewHolder>(Diff) {
+    private var nicknames: Map<String, String> = emptyMap()
+
+    fun submitNicknames(value: Map<String, String>) {
+        if (nicknames == value) return
+        nicknames = value
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -26,14 +34,15 @@ class UserAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val avatar: TextView = itemView.findViewById(R.id.avatar)
+        private val avatar: AvatarView = itemView.findViewById(R.id.avatar)
         private val name: TextView = itemView.findViewById(R.id.name)
         private val email: TextView = itemView.findViewById(R.id.email)
 
         fun bind(user: User) {
-            name.text = user.name
+            val displayName = nicknames[user.uid] ?: user.name
+            name.text = displayName
             email.text = user.email
-            avatar.text = user.name.take(1).uppercase()
+            avatar.bind(displayName, user.photoUrl)
             itemView.setOnClickListener { onClick(user) }
         }
     }

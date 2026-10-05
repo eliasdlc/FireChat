@@ -14,18 +14,23 @@
     <dimen name="radius_bubble_tail">6dp</dimen>
     <dimen name="radius_image">12dp</dimen>
     <dimen name="radius_pill">27dp</dimen>
+    <dimen name="radius_card">22dp</dimen>
 
     <!-- Tamaños -->
     <dimen name="button_height">54dp</dimen>
     <dimen name="touch_target">48dp</dimen>
     <dimen name="avatar_size">44dp</dimen>
     <dimen name="message_max_width">280dp</dimen>
-    <dimen name="message_image_size">220dp</dimen>
+    <dimen name="message_image_size">240dp</dimen>
+    <dimen name="message_media_min_height">120dp</dimen>
+    <dimen name="message_media_max_height">320dp</dimen>
     <!-- Espacio bajo la lista para que el botón flotante no tape la última fila -->
     <dimen name="list_bottom_padding">96dp</dimen>
 
     <!-- En modo oscuro no hay sombras: values-night las pone en 0 -->
     <dimen name="fab_elevation">6dp</dimen>
+
+    <dimen name="typing_bubble_width">76dp</dimen>
 
     <!-- Tipografía -->
     <dimen name="text_display">30sp</dimen>

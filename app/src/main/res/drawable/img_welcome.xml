@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ilustración de bienvenida: una burbuja recibida, una enviada y la llama de la marca. Toma el acento del tema. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="167dp"
+    android:viewportWidth="240"
+    android:viewportHeight="200">
+    <path android:fillColor="@color/sf" android:pathData="M38,40 H154 A22,22 0 0 1 176,62 V90 A22,22 0 0 1 154,112 H22 A6,6 0 0 1 16,106 V62 A22,22 0 0 1 38,40 Z" />
+    <path android:fillColor="@color/sf2" android:pathData="M41.0,62 H143.0 A5.0,5.0 0 0 1 148,67.0 V67.0 A5.0,5.0 0 0 1 143.0,72 H41.0 A5.0,5.0 0 0 1 36,67.0 V67.0 A5.0,5.0 0 0 1 41.0,62 Z" />
+    <path android:fillColor="@color/sf2" android:pathData="M41.0,82 H107.0 A5.0,5.0 0 0 1 112,87.0 V87.0 A5.0,5.0 0 0 1 107.0,92 H41.0 A5.0,5.0 0 0 1 36,87.0 V87.0 A5.0,5.0 0 0 1 41.0,82 Z" />
+    <path android:fillColor="?attr/colorPrimary" android:pathData="M86,124 H202 A22,22 0 0 1 224,146 V182 A6,6 0 0 1 218,188 H86 A22,22 0 0 1 64,166 V146 A22,22 0 0 1 86,124 Z" />
+    <path android:fillAlpha="0.85" android:fillColor="?attr/colorOnPrimary" android:pathData="M89.0,144 H195.0 A5.0,5.0 0 0 1 200,149.0 V149.0 A5.0,5.0 0 0 1 195.0,154 H89.0 A5.0,5.0 0 0 1 84,149.0 V149.0 A5.0,5.0 0 0 1 89.0,144 Z" />
+    <path android:fillAlpha="0.85" android:fillColor="?attr/colorOnPrimary" android:pathData="M89.0,160 H151.0 A5.0,5.0 0 0 1 156,165.0 V165.0 A5.0,5.0 0 0 1 151.0,170 H89.0 A5.0,5.0 0 0 1 84,165.0 V165.0 A5.0,5.0 0 0 1 89.0,160 Z" />
+    <path android:fillColor="?attr/colorPrimary" android:pathData="M204,7 A24,24 0 1 1 203.99,7 Z" />
+    <path android:fillColor="?attr/colorOnPrimary" android:pathData="M204,17 C204,17 215,25.5 215,34 C215,40.5 210.1,45 204,45 C197.9,45 193,40.5 193,34 C193,29.6 195.6,26.4 197.8,24.8 C197.8,28.6 200,30.8 202.2,30.8 C202.2,25.4 204,21.2 204,17 Z" />
+</vector>

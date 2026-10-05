@@ -11,10 +11,71 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:title="@string/conversations_title"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/TextAppearance.MyChat.Display"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inboxSearchLayout"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_margin"
+        android:layout_marginTop="@dimen/space_s" android:hint="@string/search_chats"
+        app:startIconDrawable="@drawable/ic_search" app:endIconMode="clear_text"
+        app:boxStrokeWidth="0dp"
+        app:boxCornerRadiusTopStart="@dimen/radius_pill" app:boxCornerRadiusTopEnd="@dimen/radius_pill"
+        app:boxCornerRadiusBottomStart="@dimen/radius_pill" app:boxCornerRadiusBottomEnd="@dimen/radius_pill"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inboxSearch" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:inputType="text" android:imeOptions="actionSearch" android:maxLines="1"
+            android:textSize="@dimen/text_body" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <HorizontalScrollView android:id="@+id/filterScroll"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_m" android:scrollbars="none" android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/screen_margin"
+        app:layout_constraintTop_toBottomOf="@id/inboxSearchLayout"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <com.google.android.material.chip.ChipGroup android:id="@+id/inboxFilters"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            app:singleLine="true" app:singleSelection="true" app:selectionRequired="true">
+            <com.google.android.material.chip.Chip android:id="@+id/filterAll"
+                style="@style/Widget.MyChat.InboxChip" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/filter_all" android:checked="true" />
+            <com.google.android.material.chip.Chip android:id="@+id/filterUnread"
+                style="@style/Widget.MyChat.InboxChip" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/filter_unread" />
+            <com.google.android.material.chip.Chip android:id="@+id/filterRead"
+                style="@style/Widget.MyChat.InboxChip" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/filter_read" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <LinearLayout android:id="@+id/archivedEntry"
+        android:layout_width="0dp" android:layout_height="wrap_content" android:minHeight="@dimen/button_height"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/screen_margin" android:paddingVertical="@dimen/space_m"
+        android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/filterScroll"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <ImageView android:layout_width="@dimen/avatar_size" android:layout_height="24dp"
+            android:src="@drawable/ic_archive" android:importantForAccessibility="no" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginStart="@dimen/space_m" android:text="@string/archived_title"
+            android:textAppearance="@style/TextAppearance.MyChat.Label" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/archivedCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MyChat.Caption" android:importantForAccessibility="no" tools:text="3" />
+    </LinearLayout>
+
+    <TextView android:id="@+id/inboxError" android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_margin" android:textColor="@color/error"
+        android:textAppearance="@style/TextAppearance.MyChat.Caption" android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/archivedEntry"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conversationList"
@@ -25,7 +86,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/inboxError"
         tools:listitem="@layout/item_conversation" />
 
     <TextView
@@ -40,7 +101,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/inboxError" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/newChatButton"
@@ -49,11 +110,11 @@
         android:layout_margin="@dimen/screen_margin"
         android:text="@string/new_chat"
         android:textAllCaps="false"
-        android:textColor="@color/on"
-        app:backgroundTint="@color/ac"
+        android:textColor="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimary"
         app:elevation="@dimen/fab_elevation"
         app:icon="@drawable/ic_add"
-        app:iconTint="@color/on"
+        app:iconTint="?attr/colorOnPrimary"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

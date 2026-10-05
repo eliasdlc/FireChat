@@ -1,25 +1,70 @@
 package com.example.firechat.data.repository
 
 import com.example.firechat.data.model.User
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
-class UserRepository {
+class UserRepository(
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
 
-    fun observeUsers(excludeUid: String): Flow<List<User>> =
-        flowOf(sampleUsers.filter { it.uid != excludeUid }.sortedBy { it.name })
+    private val users get() = db.collection(USERS)
 
-    suspend fun getUser(uid: String): User? = sampleUsers.find { it.uid == uid }
+    suspend fun createProfile(user: User) {
+        users.document(user.uid).set(user).await()
+    }
 
-    companion object {
-        const val LOCAL_USER_ID = "local-user"
+    suspend fun getUser(uid: String): User? =
+        users.document(uid).get().await().toObject(User::class.java)
 
-        private val sampleUsers = listOf(
-            User(uid = LOCAL_USER_ID, name = "Yo", email = "yo@firechat.app"),
-            User(uid = "user1", name = "Elias De La Cruz", email = "elias@firechat.app"),
-            User(uid = "user2", name = "Carlos Gómez", email = "carlos@firechat.app"),
-            User(uid = "user3", name = "María Rodríguez", email = "maria@firechat.app"),
-            User(uid = "user4", name = "Luis Martínez", email = "luis@firechat.app")
-        )
+    suspend fun updateName(uid: String, name: String) {
+        require(uid.isNotBlank())
+        require(name.isNotBlank())
+        users.document(uid)
+            .update(FIELD_NAME, name.trim())
+            .await()
+    }
+
+    fun observeUser(uid: String): Flow<User?> = callbackFlow {
+        require(uid.isNotBlank() && '/' !in uid)
+        val registration = users.document(uid).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            trySend(snapshot?.toObject(User::class.java))
+        }
+        awaitClose { registration.remove() }
+    }
+
+    fun observePhotos(uids: List<String>): Flow<Map<String, String?>> {
+        val ids = uids.filter { it.isNotBlank() && '/' !in it }.distinct()
+        if (ids.isEmpty()) return flowOf(emptyMap())
+        return combine(ids.map(::observeUser)) { users ->
+            ids.zip(users.map { it?.photoUrl }).toMap()
+        }
+    }
+
+    fun observeUsers(excludeUid: String): Flow<List<User>> = callbackFlow {
+        val registration = users.orderBy(FIELD_NAME).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            val list = snapshot?.toObjects(User::class.java).orEmpty()
+                .filter { it.uid != excludeUid }
+            trySend(list)
+        }
+        awaitClose { registration.remove() }
+    }
+
+    private companion object {
+        const val USERS = "users"
+        const val FIELD_NAME = "name"
     }
 }

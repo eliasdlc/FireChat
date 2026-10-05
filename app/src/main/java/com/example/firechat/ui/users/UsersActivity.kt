@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.firechat.ui.theme.ThemedActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +14,7 @@ import com.example.firechat.ui.chat.ChatActivity
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 
-class UsersActivity : AppCompatActivity() {
+class UsersActivity : ThemedActivity() {
 
     private val viewModel: UsersViewModel by viewModels()
 
@@ -35,6 +35,7 @@ class UsersActivity : AppCompatActivity() {
         }
         userList.layoutManager = LinearLayoutManager(this)
         userList.adapter = adapter
+        viewModel.nicknames.observe(this) { adapter.submitNicknames(it) }
 
         viewModel.users.observe(this) { list ->
             adapter.submitList(list)

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.auth.WelcomeActivity">
+
+    <!-- La marca ocupa el centro; las dos acciones quedan abajo, al alcance del pulgar. -->
+    <ImageView
+        android:id="@+id/welcomeImage"
+        android:layout_width="200dp"
+        android:layout_height="167dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/img_welcome"
+        app:layout_constraintBottom_toTopOf="@id/welcomeTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.42"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/welcomeTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_margin"
+        android:layout_marginTop="@dimen/space_xxl"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.MyChat.Display"
+        app:layout_constraintBottom_toTopOf="@id/welcomeSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcomeImage" />
+
+    <TextView
+        android:id="@+id/welcomeSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/space_xxl"
+        android:layout_marginTop="@dimen/space_s"
+        android:gravity="center"
+        android:text="@string/welcome_subtitle"
+        android:textAppearance="@style/TextAppearance.MyChat.Body"
+        app:layout_constraintBottom_toTopOf="@id/welcomeLoginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcomeTitle" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/welcomeLoginButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_margin"
+        android:layout_marginBottom="@dimen/space_m"
+        android:text="@string/login_button"
+        app:layout_constraintBottom_toTopOf="@id/welcomeRegisterButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/welcomeRegisterButton"
+        style="@style/Widget.MyChat.Button.Secondary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_margin"
+        android:layout_marginBottom="@dimen/screen_margin"
+        android:text="@string/register_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isParticipant(chatId) {
+      return signedIn() && request.auth.uid in chatId.split('_');
+    }
+
+    // Text messages: no type (older clients) or type text, 1 to 4000 characters.
+    function validText(data) {
+      return (!('type' in data) || data.type == 'text')
+        && data.text.size() > 0
+        && data.text.size() <= 4000;
+    }
+
+    // Media files live under chats/{chatId}/{senderUid}/ in Storage.
+    function ownMediaPath(url, chatId) {
+      return url is string
+        && url.matches('gs://[^/]+/chats/' + chatId + '/' + request.auth.uid + '/[^/]+');
+    }
+
+    // Image and video messages point at the sender's own upload in this chat.
+    function validMedia(data, chatId) {
+      return data.type in ['image', 'video']
+        && data.text == ''
+        && ownMediaPath(data.mediaUrl, chatId)
+        && (data.type == 'image' || ownMediaPath(data.thumbUrl, chatId));
+    }
+
+    match /fcmTokens/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid;
+
+      match /chatSettings/{chatId} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid && isParticipant(chatId)
+          && request.resource.data.keys().hasOnly(['archived'])
+          && request.resource.data.archived is bool;
+      }
+    }
+
+    match /chats/{chatId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.participants;
+      allow create, update: if isParticipant(chatId)
+        && request.resource.data.participants.size() == 2
+        && request.resource.data.participants.hasAll(chatId.split('_'));
+
+      match /reads/{uid} {
+        allow read: if isParticipant(chatId);
+        allow create, update: if isParticipant(chatId) && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['through', 'throughMessageId', 'updatedAt'])
+          && request.resource.data.through is timestamp
+          && request.resource.data.through <= request.time
+          && request.resource.data.throughMessageId is string
+          && request.resource.data.throughMessageId.size() > 0
+          && request.resource.data.throughMessageId.size() <= 1500
+          && !request.resource.data.throughMessageId.matches('.*[/].*')
+          && request.resource.data.updatedAt == request.time
+          && get(/databases/$(database)/documents/chats/$(chatId)/messages/$(request.resource.data.throughMessageId)).data.senderId != uid
+          && get(/databases/$(database)/documents/chats/$(chatId)/messages/$(request.resource.data.throughMessageId)).data.createdAt == request.resource.data.through
+          && (!exists(/databases/$(database)/documents/chats/$(chatId)/reads/$(uid)) || request.resource.data.through >= resource.data.through);
+      }
+
+      match /typing/{uid} {
+        allow read: if isParticipant(chatId);
+        allow create, update: if isParticipant(chatId) && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['updatedAt', 'expiresAt'])
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.expiresAt is timestamp
+          && request.resource.data.expiresAt > request.time
+          && request.resource.data.expiresAt <= request.time + duration.value(15, 's');
+        allow delete: if isParticipant(chatId) && request.auth.uid == uid;
+      }
+
+      match /messages/{messageId} {
+        allow read: if isParticipant(chatId);
+        allow create: if isParticipant(chatId)
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.text is string
+          && (validText(request.resource.data) || validMedia(request.resource.data, chatId));
+      }
+    }
+  }
+}

@@ -8,5 +8,24 @@
     <color name="mute">#FF6B7079</color>
     <color name="ac">#FF2F6BFF</color>
     <color name="on">#FFFFFFFF</color>
+    <color name="ln">#0F15171C</color>
+    <color name="ln2">#2B15171C</color>
+    <color name="viewer_bg">#FF000000</color>
+    <color name="media_badge">#99000000</color>
+    <color name="media_badge_ink">#FFFFFFFF</color>
     <color name="error">#FFD92D20</color>
+    <color name="ac_green">#147D51</color>
+    <color name="on_green">#FFFFFF</color>
+    <color name="ac_violet">#7550D8</color>
+    <color name="on_violet">#FFFFFF</color>
+    <color name="ac_rose">#C43D73</color>
+    <color name="on_rose">#FFFFFF</color>
+    <color name="ac_amber">#996300</color>
+    <color name="on_amber">#FFFFFF</color>
+    <color name="ac_teal">#007C83</color>
+    <color name="on_teal">#FFFFFF</color>
+    <color name="wallpaper_sage">#E8F0E9</color>
+    <color name="wallpaper_sand">#F4EDDF</color>
+    <color name="wallpaper_lavender">#EFEBF6</color>
+    <color name="wallpaper_pattern">#182E384D</color>
 </resources>
