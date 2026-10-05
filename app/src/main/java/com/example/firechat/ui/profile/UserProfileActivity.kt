@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.util.applySystemBarsPadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -36,7 +37,7 @@ class UserProfileActivity : ThemedActivity() {
         val content = findViewById<View>(R.id.userProfileContent)
         val name = findViewById<TextView>(R.id.userProfileName)
         val email = findViewById<TextView>(R.id.userProfileEmail)
-        val avatar = findViewById<TextView>(R.id.userProfileAvatar)
+        val avatar = findViewById<AvatarView>(R.id.userProfileAvatar)
         val publicName = findViewById<TextView>(R.id.userProfilePublicName)
         val nicknameEditor = findViewById<View>(R.id.nicknameEditor)
         val nicknameInput = findViewById<TextInputEditText>(R.id.nicknameInput)
@@ -58,7 +59,7 @@ class UserProfileActivity : ThemedActivity() {
             publicName.isVisible = state.originalNickname.isNotBlank()
             email.text = state.email
             email.isVisible = state.email.isNotBlank()
-            avatar.text = state.displayName.trim().take(1).uppercase().ifBlank { "?" }
+            avatar.bind(state.displayName, state.photoUrl)
             nicknameEditor.isVisible = state.canEditNickname
             nicknameInput.isEnabled = state.canEditNickname && !state.isSavingNickname
             if (nicknameInput.text.toString() != state.nickname) nicknameInput.setText(state.nickname)

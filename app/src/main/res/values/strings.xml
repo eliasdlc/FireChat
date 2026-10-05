@@ -132,4 +132,8 @@
     <string name="wallpaper_image_too_large">Elige una imagen de hasta 25 MB.</string>
     <string name="wallpaper_image_error">No se pudo abrir la imagen. Elige otra e intenta nuevamente.</string>
     <string name="wallpaper_save_error">No se pudo guardar el fondo. Intenta nuevamente.</string>
+    <string name="profile_change_photo">Cambiar foto</string>
+    <string name="profile_uploading_photo">Subiendo foto…</string>
+    <string name="profile_photo_saved">Foto actualizada.</string>
+    <string name="error_profile_photo">No se pudo confirmar el cambio de foto. Intenta nuevamente.</string>
 </resources>

@@ -53,7 +53,7 @@ class UserProfileViewModel(application: Application, private val savedStateHandl
                     else -> {
                         val nickname = nicknames.read(sessionId, userId)
                         UserProfileUiState(
-                            name = user.name, email = user.email, isLoaded = true, isLoading = false,
+                            name = user.name, email = user.email, photoUrl = user.photoUrl, isLoaded = true, isLoading = false,
                             nickname = savedStateHandle[NICKNAME_DRAFT] ?: nickname,
                             originalNickname = nickname, canEditNickname = userId != sessionId
                         )

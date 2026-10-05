@@ -12,6 +12,7 @@ import com.example.firechat.ui.theme.AppearanceActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import com.example.firechat.R
+import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.ui.auth.LoginActivity
 import com.example.firechat.util.applySystemBarsPadding
@@ -44,8 +45,7 @@ class ProfileActivity : ThemedActivity() {
         viewModel.uiState.observe(this) { state ->
             findViewById<TextView>(R.id.profileDisplayName).text = state.name
             findViewById<TextView>(R.id.profileEmail).text = state.email
-            findViewById<TextView>(R.id.profileAvatar).text =
-                state.name.trim().take(1).uppercase().ifBlank { "?" }
+            findViewById<AvatarView>(R.id.profileAvatar).bind(state.name, state.photoUrl)
             editRow.isEnabled = state.isLoaded && !state.isLoading
             status.setText(R.string.profile_loading)
             status.isVisible = state.isLoading

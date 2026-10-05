@@ -5,6 +5,7 @@ import com.example.firechat.data.repository.NicknameRepository
 data class UserProfileUiState(
     val name: String = "",
     val email: String = "",
+    val photoUrl: String? = null,
     val isLoaded: Boolean = false,
     val isLoading: Boolean = true,
     val error: Int? = null,

@@ -97,7 +97,7 @@ class UserProfileFlowTest {
             onView(withId(R.id.chatProfileHeader)).perform(click())
             awaitName("Camila Prueba")
             onView(withId(R.id.userProfileEmail)).check(matches(withText(otherEmail)))
-            onView(withId(R.id.userProfileAvatar)).check(matches(withText("C")))
+            onView(org.hamcrest.Matchers.allOf(withText("C"), androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA(withId(R.id.userProfileAvatar)))).check(matches(isDisplayed()))
             capture("user-profile-light")
             onView(withContentDescription(R.string.navigate_back)).perform(click())
             onView(withId(R.id.messageInput)).check(matches(withText("Mensaje sin enviar")))

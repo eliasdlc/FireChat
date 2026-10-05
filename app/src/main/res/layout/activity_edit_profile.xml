@@ -28,7 +28,7 @@
             android:orientation="vertical"
             android:padding="@dimen/screen_margin">
 
-            <TextView
+            <com.example.firechat.ui.common.AvatarView
                 android:id="@+id/profileAvatar"
                 android:layout_width="@dimen/avatar_size"
                 android:layout_height="@dimen/avatar_size"
@@ -39,6 +39,15 @@
                 android:textAppearance="@style/TextAppearance.MyChat.Heading"
                 tools:text="A" />
 
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/changePhotoButton"
+                style="@style/Widget.MyChat.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/profile_change_photo"
+                android:enabled="false" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

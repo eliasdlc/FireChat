@@ -1,5 +1,21 @@
 package com.example.firechat
 
+import android.content.ContentValues
+import android.graphics.Color
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.provider.MediaStore
+import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.ImageView
+import android.graphics.Rect
+import android.os.ParcelFileDescriptor
+import com.example.firechat.ui.profile.UserProfileActivity
+import androidx.lifecycle.ViewModelProvider
+import com.example.firechat.ui.profile.ProfileViewModel
+import com.example.firechat.ui.common.AvatarView
+import com.example.firechat.data.repository.ProfilePhotoRepository
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import android.graphics.Bitmap
 import android.os.Build
 import android.widget.TextView
@@ -53,6 +69,7 @@ class ProfileFlowTest {
     private lateinit var db: FirebaseFirestore
     private lateinit var uid: String
     private lateinit var email: String
+    private var fixtureImage: Uri? = null
 
     @Before
     fun createEmulatorAccount() {
@@ -71,6 +88,7 @@ class ProfileFlowTest {
         if (!configured) {
             auth.useEmulator("10.0.2.2", 19099)
             db.useEmulator("10.0.2.2", 18080)
+            FirebaseStorage.getInstance().useEmulator("10.0.2.2", 19199)
             configured = true
         }
         auth.signOut()
@@ -87,6 +105,7 @@ class ProfileFlowTest {
     @After
     fun signOut() {
         if (::auth.isInitialized) auth.signOut()
+        fixtureImage?.let { context.contentResolver.delete(it, null, null) }
     }
 
     @Test
@@ -293,6 +312,176 @@ class ProfileFlowTest {
             onView(withId(R.id.loginButton)).check(matches(isDisplayed()))
         }
     }
+
+    @Test
+    fun kPhotoUploadPreservesFieldsAndDisplaysAfterReopening() {
+        seedProfile()
+        val uri = createImage()
+        var firstUrl: String? = null
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
+            awaitLoaded(scenario)
+            onView(withId(R.id.profileNameInput)).perform(replaceText("Nombre sin guardar"), closeSoftKeyboard())
+            scenario.onActivity {
+                ViewModelProvider(it)[ProfileViewModel::class.java].uploadPhoto(it.contentResolver, uri)
+            }
+            awaitState(scenario) {
+                it.findViewById<TextView>(R.id.profileStatus).text == context.getString(R.string.profile_photo_saved)
+            }
+            onView(withId(R.id.profileNameInput)).check(matches(withText("Nombre sin guardar")))
+            val document = runBlocking { db.collection("users").document(uid).get(Source.SERVER).await() }
+            assertEquals("Ana Prueba", document.getString("name"))
+            assertEquals(email, document.getString("email"))
+            assertEquals("synthetic-token", document.getString("fcmToken"))
+            assertEquals("preserve-me", document.getString("fixtureExtra"))
+            val url = checkNotNull(document.getString("photoUrl"))
+            firstUrl = url
+            val reference = FirebaseStorage.getInstance().getReferenceFromUrl(url)
+            val bytes = runBlocking { reference.getBytes(524288).await() }
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            assertEquals(512, bitmap.width)
+            assertEquals(512, bitmap.height)
+            assertEquals("image/jpeg", runBlocking { reference.metadata.await().contentType })
+            awaitState(scenario) { avatarHasPhoto(it.findViewById(R.id.profileAvatar)) }
+            capture("profile-photo-editor")
+        }
+        val oldPhoto = FirebaseStorage.getInstance().getReferenceFromUrl(checkNotNull(firstUrl))
+        val replacement = runBlocking { ProfilePhotoRepository().update(uid, oldPhoto.getBytes(524288).await()) }
+        org.junit.Assert.assertNotEquals(firstUrl, replacement)
+        waitUntil { runBlocking { runCatching { oldPhoto.metadata.await() }.isFailure } }
+        ActivityScenario.launch(ProfileActivity::class.java).use { scenario ->
+            waitUntil {
+                var loaded = false
+                scenario.onActivity { loaded = avatarHasPhoto(it.findViewById(R.id.profileAvatar)) }
+                loaded
+            }
+            capture("profile-photo-home")
+        }
+    }
+
+    @Test
+    fun lPhotoPickerCanSelectImage() {
+        seedProfile()
+        createImage()
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
+            awaitLoaded(scenario)
+            onView(withId(R.id.changePhotoButton)).perform(click())
+            waitUntil {
+                val root = instrumentation.uiAutomation.rootInActiveWindow ?: return@waitUntil false
+                val nodes = allNodes(root)
+                val photo = nodes.firstOrNull {
+                    it.viewIdResourceName?.endsWith(":id/icon_thumbnail") == true ||
+                        it.contentDescription?.toString()?.startsWith("Photo taken") == true
+                }
+                if (photo == null) {
+                    android.util.Log.d("ProfilePicker", nodes.joinToString(" | ") {
+                        "${it.viewIdResourceName}: ${it.text}: ${it.contentDescription}"
+                    })
+                    false
+                } else {
+                    val bounds = Rect()
+                    photo.getBoundsInScreen(bounds)
+                    ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+                        "input tap ${bounds.centerX()} ${bounds.centerY()}"
+                    )).use { it.readBytes() }
+                    true
+                }
+            }
+            // Some system picker versions ask to confirm the selected photo.
+            val root = instrumentation.uiAutomation.rootInActiveWindow
+            root?.let { allNodes(it).firstOrNull { node -> node.text?.toString() == "Add" }
+                ?.performAction(AccessibilityNodeInfo.ACTION_CLICK) }
+            awaitState(scenario) {
+                it.findViewById<TextView>(R.id.profileStatus).text == context.getString(R.string.profile_photo_saved)
+            }
+            awaitState(scenario) { avatarHasPhoto(it.findViewById(R.id.profileAvatar)) }
+            capture("profile-photo-picked")
+        }
+    }
+
+    @Test
+    fun mCancelledPickerNeverChangesProfile() {
+        seedProfile()
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
+            awaitLoaded(scenario)
+            onView(withId(R.id.changePhotoButton)).perform(click())
+            waitUntil { instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString()?.contains("providers.media") == true }
+            instrumentation.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK)
+            onView(withId(R.id.changePhotoButton)).check(matches(isDisplayed()))
+            assertEquals(null, runBlocking { db.collection("users").document(uid).get(Source.SERVER).await().getString("photoUrl") })
+        }
+    }
+
+    @Test
+    fun nInvalidImageKeepsExistingPhotoAndNameDraft() {
+        seedProfile()
+        val uri = createImage()
+        val bytes = com.example.firechat.ui.profile.ProfileImage.jpeg(context.contentResolver, uri)
+        val previous = runBlocking { ProfilePhotoRepository().update(uid, bytes) }
+        ActivityScenario.launch(EditProfileActivity::class.java).use { scenario ->
+            awaitLoaded(scenario)
+            onView(withId(R.id.profileNameInput)).perform(replaceText("Borrador"), closeSoftKeyboard())
+            scenario.onActivity {
+                ViewModelProvider(it)[ProfileViewModel::class.java].uploadPhoto(it.contentResolver, Uri.parse("content://firechat.test/missing"))
+            }
+            awaitError(scenario, R.string.error_profile_photo)
+            onView(withId(R.id.profileNameInput)).check(matches(withText("Borrador")))
+            assertEquals(previous, runBlocking { db.collection("users").document(uid).get(Source.SERVER).await().getString("photoUrl") })
+            capture("profile-photo-error")
+        }
+    }
+
+    @Test
+    fun oStorageRejectsInvalidMimeAndAnotherUsersPath() {
+        val storage = FirebaseStorage.getInstance()
+        for ((path, type) in listOf("avatars/$uid/not-image.jpg" to "text/plain", "avatars/other-user/photo.jpg" to "image/jpeg")) {
+            val result = runBlocking { runCatching { storage.reference.child(path)
+                .putBytes(byteArrayOf(1,2,3), StorageMetadata.Builder().setContentType(type).build()).await() } }
+            org.junit.Assert.assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun pAnotherSignedInUserSeesUploadedAvatarWithoutChangingNickname() {
+        seedProfile()
+        val original = runBlocking { ProfilePhotoRepository().update(uid,
+            com.example.firechat.ui.profile.ProfileImage.jpeg(context.contentResolver, createImage())) }
+        val viewer = runBlocking { checkNotNull(auth.createUserWithEmailAndPassword(
+            "viewer-${UUID.randomUUID().toString().take(8)}@firechat.test", PASSWORD).await().user).uid }
+        runBlocking { com.example.firechat.data.repository.NicknameRepository(context).save(viewer, uid, "Mi amiga") }
+        ActivityScenario.launch<UserProfileActivity>(UserProfileActivity.newIntent(context, uid)).use { scenario ->
+            waitUntil {
+                var loaded = false
+                scenario.onActivity { loaded = avatarHasPhoto(it.findViewById(R.id.userProfileAvatar)) }
+                loaded
+            }
+            onView(withId(R.id.userProfileName)).check(matches(withText("Mi amiga")))
+            capture("profile-photo-other-user")
+            assertEquals(original, runBlocking { db.collection("users").document(uid).get(Source.SERVER).await().getString("photoUrl") })
+        }
+        auth.signOut()
+        val denied = runBlocking { runCatching { FirebaseStorage.getInstance().getReferenceFromUrl(original).getBytes(524288).await() } }
+        org.junit.Assert.assertTrue(denied.isFailure)
+    }
+
+    private fun avatarHasPhoto(view: AvatarView): Boolean = (view.getChildAt(1) as ImageView).drawable != null
+
+    private fun createImage(): Uri {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "FireChat-test-${UUID.randomUUID()}.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.IS_PENDING, 1)
+        }
+        val uri = checkNotNull(context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values))
+        fixtureImage = uri
+        val bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.rgb(30,120,180)) }
+        context.contentResolver.openOutputStream(uri).use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, checkNotNull(it)) }
+        bitmap.recycle()
+        context.contentResolver.update(uri, ContentValues().apply { put(MediaStore.Images.Media.IS_PENDING, 0) }, null, null)
+        return uri
+    }
+
+    private fun allNodes(node: AccessibilityNodeInfo): List<AccessibilityNodeInfo> =
+        listOf(node) + (0 until node.childCount).flatMap { index -> node.getChild(index)?.let(::allNodes).orEmpty() }
 
     @Test
     fun zBackendFailureKeepsDraftAndNeverShowsSuccess() {
