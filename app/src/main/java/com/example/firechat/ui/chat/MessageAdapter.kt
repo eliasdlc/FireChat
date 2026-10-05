@@ -9,11 +9,22 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
 import com.example.firechat.data.model.Message
+import com.example.firechat.data.model.ReadMarker
 import com.example.firechat.util.DateFormatter
 
 class MessageAdapter(
     private val myUid: String
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(Diff) {
+
+    private var recipientRead = ReadMarker()
+
+    fun submitRecipientRead(value: ReadMarker) {
+        if (recipientRead == value) return
+        recipientRead = value
+        currentList.forEachIndexed { index, message ->
+            if (message.senderId == myUid) notifyItemChanged(index)
+        }
+    }
 
     override fun getItemViewType(position: Int): Int =
         if (getItem(position).senderId == myUid) TYPE_SENT else TYPE_RECEIVED
@@ -36,12 +47,19 @@ class MessageAdapter(
     }
 
     inner class SentHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val status: TextView = itemView.findViewById(R.id.readStatus)
 
         private val text: TextView = itemView.findViewById(R.id.text)
         private val time: TextView = itemView.findViewById(R.id.time)
 
         fun bind(message: Message) {
             text.text = message.text
+            status.setText(when {
+                message.serverCreatedAt == null -> R.string.message_sending
+                recipientRead.includes(message) -> R.string.message_read
+                else -> R.string.message_sent
+            })
+            status.contentDescription = status.text
             time.text = DateFormatter.messageTime(itemView.context, message.createdAt)
         }
     }

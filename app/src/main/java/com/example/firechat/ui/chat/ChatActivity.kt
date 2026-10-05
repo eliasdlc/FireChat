@@ -95,9 +95,11 @@ class ChatActivity : ThemedActivity() {
 
         viewModel.recipientTyping.observe(this) { typingBubble.isVisible = it }
 
+        viewModel.recipientRead.observe(this) { adapter.submitRecipientRead(it) }
         viewModel.messages.observe(this) { list ->
             adapter.submitList(list) {
                 if (list.isNotEmpty()) messageList.scrollToPosition(list.lastIndex)
+                viewModel.messagesShown(list)
             }
         }
         viewModel.uiState.observe(this) { state ->
@@ -116,6 +118,11 @@ class ChatActivity : ThemedActivity() {
             findViewById<View>(R.id.chatWallpaper).background = WallpaperRenderer.load(this@ChatActivity, viewModel.myUid, wallpaper)
         }
         viewModel.chatResumed()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        viewModel.windowFocusChanged(hasFocus)
     }
 
     override fun onPause() { viewModel.chatPaused(); super.onPause() }

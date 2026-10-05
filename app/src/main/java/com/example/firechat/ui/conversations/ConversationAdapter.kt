@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
 import com.example.firechat.ui.common.AvatarView
-import com.example.firechat.data.model.Conversation
 import com.example.firechat.util.DateFormatter
 
 class ConversationAdapter(
     private val myUid: String,
-    private val onClick: (Conversation) -> Unit
-) : ListAdapter<Conversation, ConversationAdapter.ViewHolder>(Diff) {
+    private val onClick: (com.example.firechat.data.model.Conversation) -> Unit,
+    private val onLongClick: (InboxRow) -> Unit = {}
+) : ListAdapter<InboxRow, ConversationAdapter.ViewHolder>(Diff) {
     private var nicknames: Map<String, String> = emptyMap()
 
     private var photos: Map<String, String?> = emptyMap()
@@ -45,11 +45,13 @@ class ConversationAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val avatar: AvatarView = itemView.findViewById(R.id.avatar)
+        private val badge: TextView = itemView.findViewById(R.id.unreadBadge)
         private val name: TextView = itemView.findViewById(R.id.name)
         private val time: TextView = itemView.findViewById(R.id.time)
         private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
 
-        fun bind(conversation: Conversation) {
+        fun bind(row: InboxRow) {
+            val conversation = row.conversation
             val context = itemView.context
             val otherName = nicknames[conversation.otherUid(myUid)] ?: conversation.otherName(myUid)
             name.text = otherName
@@ -60,12 +62,17 @@ class ConversationAdapter(
                 conversation.lastMessage
             }
             time.text = DateFormatter.conversationTime(context, conversation.lastMessageAt)
+            val unread = row.unreadCount ?: 0
+            badge.visibility = if (unread > 0) View.VISIBLE else View.GONE
+            badge.text = if (unread > 99) "99+" else unread.toString()
+            badge.contentDescription = context.resources.getQuantityString(R.plurals.unread_messages_count, unread, unread)
             itemView.setOnClickListener { onClick(conversation) }
+            itemView.setOnLongClickListener { onLongClick(row); true }
         }
     }
 
-    private object Diff : DiffUtil.ItemCallback<Conversation>() {
-        override fun areItemsTheSame(old: Conversation, new: Conversation) = old.id == new.id
-        override fun areContentsTheSame(old: Conversation, new: Conversation) = old == new
+    private object Diff : DiffUtil.ItemCallback<InboxRow>() {
+        override fun areItemsTheSame(old: InboxRow, new: InboxRow) = old.conversation.id == new.conversation.id
+        override fun areContentsTheSame(old: InboxRow, new: InboxRow) = old == new
     }
 }

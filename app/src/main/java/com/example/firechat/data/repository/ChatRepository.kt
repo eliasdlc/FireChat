@@ -5,6 +5,8 @@ import com.example.firechat.data.model.Message
 import com.example.firechat.data.model.User
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -37,13 +39,19 @@ class ChatRepository(
     fun observeMessages(chatId: String): Flow<List<Message>> = callbackFlow {
         val registration = chats.document(chatId).collection(MESSAGES)
             .orderBy(FIELD_CREATED_AT, Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshot, error ->
+            .orderBy(FieldPath.documentId())
+            .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
                 if (error != null) {
                     close(error)
                     return@addSnapshotListener
                 }
                 val list = snapshot?.documents.orEmpty()
-                    .mapNotNull { it.toObject(Message::class.java, ESTIMATE) }
+                    .mapNotNull { document ->
+                        document.toObject(Message::class.java, ESTIMATE)?.copy(
+                            serverCreatedAt = if (document.metadata.hasPendingWrites()) null
+                                else document.getTimestamp(FIELD_CREATED_AT)
+                        )
+                    }
                 trySend(list)
             }
         awaitClose { registration.remove() }

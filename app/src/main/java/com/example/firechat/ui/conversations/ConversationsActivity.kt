@@ -10,6 +10,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.EditText
+import androidx.core.widget.doAfterTextChanged
+import androidx.activity.OnBackPressedCallback
+import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -48,12 +55,37 @@ class ConversationsActivity : ThemedActivity() {
         val newChatButton = findViewById<ExtendedFloatingActionButton>(R.id.newChatButton)
         setSupportActionBar(toolbar)
 
-        val adapter = ConversationAdapter(viewModel.myUid) { conversation ->
+        val adapter = ConversationAdapter(viewModel.myUid, onClick = { conversation ->
             val otherUid = conversation.otherUid(viewModel.myUid)
             startActivity(ChatActivity.newIntent(this, otherUid, conversation.otherName(viewModel.myUid)))
-        }
+        }, onLongClick = { row ->
+            val chat = row.conversation
+            val name = viewModel.nicknames.value?.get(chat.otherUid(viewModel.myUid)) ?: chat.otherName(viewModel.myUid)
+            MaterialAlertDialogBuilder(this).setTitle(name)
+                .setItems(arrayOf(getString(if (row.archived) R.string.unarchive_chat else R.string.archive_chat))) { _, _ ->
+                    viewModel.setArchived(chat.id, !row.archived)
+                }.show()
+        })
         conversationList.layoutManager = LinearLayoutManager(this)
         conversationList.adapter = adapter
+        (conversationList.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+        val search = findViewById<EditText>(R.id.inboxSearch)
+        search.doAfterTextChanged { viewModel.searchChanged(it.toString()) }
+        val filters = findViewById<ChipGroup>(R.id.inboxFilters)
+        filters.setOnCheckedStateChangeListener { _, checked ->
+            viewModel.filterChanged(when (checked.firstOrNull()) {
+                R.id.filterRead -> InboxFilter.READ
+                R.id.filterUnread -> InboxFilter.UNREAD
+                else -> InboxFilter.ALL
+            })
+        }
+        val archivedEntry = findViewById<View>(R.id.archivedEntry)
+        archivedEntry.setOnClickListener { viewModel.showArchived(true) }
+        val back = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() { viewModel.showArchived(false) }
+        }
+        onBackPressedDispatcher.addCallback(this, back)
+        toolbar.setNavigationOnClickListener { viewModel.showArchived(false) }
         viewModel.nicknames.observe(this) { adapter.submitNicknames(it) }
         viewModel.photos.observe(this) { adapter.submitPhotos(it) }
 
@@ -61,14 +93,33 @@ class ConversationsActivity : ThemedActivity() {
             startActivity(Intent(this, UsersActivity::class.java))
         }
 
-        viewModel.conversations.observe(this) { list ->
-            adapter.submitList(list)
-            emptyState.isVisible = list.isEmpty()
+        viewModel.inbox.observe(this) { state ->
+            adapter.submitList(state.rows)
+            emptyState.isVisible = state.rows.isEmpty()
+            emptyState.setText(when {
+                state.query.isNotBlank() || state.filter != InboxFilter.ALL -> R.string.inbox_no_matches
+                state.archived -> R.string.inbox_archived_empty
+                else -> R.string.conversations_empty
+            })
+            toolbar.title = getString(if (state.archived) R.string.archived_title else R.string.app_name)
+            toolbar.navigationIcon = if (state.archived) androidx.appcompat.content.res.AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back) else null
+            back.isEnabled = state.archived
+            archivedEntry.isVisible = !state.archived
+            archivedEntry.contentDescription = resources.getQuantityString(R.plurals.archived_chats_count, state.archivedCount, state.archivedCount)
+            findViewById<TextView>(R.id.archivedCount).text = getString(R.string.inbox_number, state.archivedCount)
+            if (search.text.toString() != state.query) search.setText(state.query)
+            filters.check(when (state.filter) {
+                InboxFilter.ALL -> R.id.filterAll
+                InboxFilter.READ -> R.id.filterRead
+                InboxFilter.UNREAD -> R.id.filterUnread
+            })
+            findViewById<Chip>(R.id.filterUnread).text = if (state.unreadChats > 0)
+                getString(R.string.filter_unread_count, state.unreadChats) else getString(R.string.filter_unread)
         }
         viewModel.error.observe(this) { error ->
-            if (error != null) {
-                emptyState.setText(error)
-                emptyState.isVisible = true
+            findViewById<TextView>(R.id.inboxError).apply {
+                text = error?.let(::getString).orEmpty()
+                isVisible = error != null
             }
         }
 

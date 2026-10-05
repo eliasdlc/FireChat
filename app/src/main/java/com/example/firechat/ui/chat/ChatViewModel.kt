@@ -16,6 +16,9 @@ import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.UserRepository
 import com.example.firechat.data.repository.NicknameRepository
 import com.example.firechat.data.repository.TypingRepository
+import com.example.firechat.data.repository.InboxRepository
+import com.example.firechat.data.model.ReadMarker
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -59,7 +62,37 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
             typing.observe(chatId, recipientId).asLiveData()
         else MutableLiveData(false)
 
-    fun chatResumed() { chatActive = true }
+    private val inboxRepository = InboxRepository()
+    private var windowFocused = false
+    private var displayedMessages: List<Message> = emptyList()
+    private var readJob: Job? = null
+    private var lastMarked = ReadMarker()
+    val recipientRead: LiveData<ReadMarker> = inboxRepository.observeRead(chatId, recipientId)
+        .catch { emit(ReadMarker()) }.asLiveData()
+
+    fun chatResumed() { chatActive = true; publishRead() }
+    fun windowFocusChanged(focused: Boolean) { windowFocused = focused; publishRead() }
+    fun messagesShown(list: List<Message>) { displayedMessages = list; publishRead() }
+
+    private fun publishRead() {
+        if (!chatActive || !windowFocused || readJob?.isActive == true || AuthRepository().currentUserId != myUid) return
+        val message = displayedMessages.lastOrNull { it.senderId == recipientId && it.serverCreatedAt != null } ?: return
+        val marker = ReadMarker(message.serverCreatedAt, message.id)
+        if (!marker.isAfter(lastMarked)) return
+        readJob = viewModelScope.launch {
+            var confirmed = false
+            try {
+                inboxRepository.markRead(chatId, myUid, message)
+                lastMarked = marker
+                confirmed = true
+            } catch (error: CancellationException) { throw error }
+            catch (_: Exception) { _uiState.value = ChatUiState(error = R.string.error_read_receipt) }
+            finally {
+                readJob = null
+                if (confirmed) publishRead()
+            }
+        }
+    }
 
     fun messageEdited(text: CharSequence?) {
         if (!chatActive) return

@@ -34,8 +34,6 @@
     <string name="error_auth_too_many_requests">Demasiados intentos. Espera un momento y vuelve a probar</string>
     <string name="error_network">No hay conexión a internet</string>
     <string name="error_unknown">Algo salió mal. Inténtalo de nuevo</string>
-
-    <string name="conversations_title">Conversaciones</string>
     <string name="conversations_empty">Todavía no tienes conversaciones. Toca el botón para escribirle a alguien.</string>
     <string name="action_logout">Cerrar sesión</string>
     <string name="new_chat">Nueva conversación</string>
@@ -136,4 +134,30 @@
     <string name="profile_uploading_photo">Subiendo foto…</string>
     <string name="profile_photo_saved">Foto actualizada.</string>
     <string name="error_profile_photo">No se pudo confirmar el cambio de foto. Intenta nuevamente.</string>
+    <string name="search_chats">Buscar chats</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_unread">No leídos</string>
+    <string name="filter_read">Leídos</string>
+    <string name="filter_unread_count">No leídos (%1$d)</string>
+    <plurals name="unread_messages_count">
+        <item quantity="one">%1$d mensaje sin leer</item>
+        <item quantity="other">%1$d mensajes sin leer</item>
+    </plurals>
+    <string name="archived_title">Archivados</string>
+    <plurals name="archived_chats_count">
+        <item quantity="one">Archivados, %1$d chat</item>
+        <item quantity="other">Archivados, %1$d chats</item>
+    </plurals>
+    <string name="inbox_number">%1$d</string>
+    <string name="archive_chat">Archivar chat</string>
+    <string name="unarchive_chat">Desarchivar chat</string>
+    <string name="inbox_no_matches">No hay chats que coincidan con tu búsqueda o filtro.</string>
+    <string name="inbox_archived_empty">No tienes chats archivados.</string>
+    <string name="message_sending">Enviando…</string>
+    <string name="message_sent">✓ Enviado</string>
+    <string name="message_read">✓✓ Leído</string>
+    <string name="error_loading_read_states">No se pudo consultar el estado de lectura. Vuelve a abrir la pantalla para reintentar.</string>
+    <string name="error_loading_archived">No se pudieron cargar los chats archivados.</string>
+    <string name="error_archiving_chat">No se pudo cambiar el archivado. Inténtalo de nuevo.</string>
+    <string name="error_read_receipt">No se pudo confirmar la lectura. Se reintentará al volver al chat.</string>
 </resources>

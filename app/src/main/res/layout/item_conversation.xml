@@ -52,9 +52,16 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.MyChat.Caption"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/unreadBadge"
+        android:layout_marginEnd="@dimen/space_s"
         app:layout_constraintStart_toStartOf="@id/name"
         app:layout_constraintTop_toBottomOf="@id/name"
         tools:text="Nos vemos mañana" />
 
+    <TextView android:id="@+id/unreadBadge" android:layout_width="wrap_content" android:layout_height="24dp"
+        android:minWidth="24dp" android:paddingHorizontal="6dp" android:gravity="center"
+        android:background="@drawable/bg_unread_badge" android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/text_caption" android:textStyle="bold" android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@id/name"
+        tools:text="3" tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
