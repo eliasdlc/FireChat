@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">FireChat</string>
 
-    <string name="login_title">Bienvenido a FireChat</string>
+    <string name="welcome_subtitle">Conversa en tiempo real con las personas que te importan</string>
+
+    <string name="login_title">Bienvenido de nuevo</string>
     <string name="login_subtitle">Inicia sesión para seguir conversando</string>
     <string name="login_button">Iniciar sesión</string>
     <string name="login_loading">Entrando…</string>
@@ -37,7 +39,17 @@
     <string name="conversations_empty">Todavía no tienes conversaciones. Toca el botón para escribirle a alguien.</string>
     <string name="action_logout">Cerrar sesión</string>
     <string name="new_chat">Nueva conversación</string>
-    <string name="message_image_preview">Imagen</string>
+    <string name="message_image_preview">Foto</string>
+    <string name="message_video_preview">Video</string>
+    <string name="message_image_open">Ver foto</string>
+    <string name="message_video_open">Reproducir video</string>
+    <string name="attach_media">Adjuntar foto o video</string>
+    <string name="media_uploading">Enviando… %1$d%%</string>
+    <string name="media_loading">Cargando…</string>
+    <string name="error_media_too_large">El archivo es muy grande. Las fotos pueden pesar hasta 4 MB y los videos hasta 50 MB.</string>
+    <string name="error_sending_media">No se pudo enviar el archivo. Inténtalo de nuevo.</string>
+    <string name="error_loading_media">No se pudo cargar el archivo.</string>
+    <string name="notification_channel_messages">Mensajes nuevos</string>
     <string name="error_loading_conversations">No se pudieron cargar tus conversaciones</string>
 
     <string name="users_title">Elige un contacto</string>

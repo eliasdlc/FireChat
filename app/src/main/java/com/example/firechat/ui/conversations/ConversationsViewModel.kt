@@ -20,6 +20,7 @@ import com.example.firechat.data.model.Conversation
 import com.example.firechat.data.repository.AuthRepository
 import com.example.firechat.data.repository.ChatRepository
 import com.example.firechat.data.repository.NicknameRepository
+import com.example.firechat.data.repository.PushTokenRepository
 import kotlinx.coroutines.flow.catch
 
 class ConversationsViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
@@ -34,6 +35,15 @@ class ConversationsViewModel(application: Application, private val savedStateHan
 
     private val _error = MutableLiveData<Int?>()
     val error: LiveData<Int?> = _error
+
+    init {
+        // Publishes this device's FCM token so new messages reach it as notifications.
+        if (myUid.isNotBlank()) viewModelScope.launch {
+            try { PushTokenRepository().register(myUid) }
+            catch (error: CancellationException) { throw error }
+            catch (_: Exception) { /* Retried on the next inbox visit and on every token refresh. */ }
+        }
+    }
 
     val conversations: LiveData<List<Conversation>> =
         chatRepository.observeConversations(myUid)

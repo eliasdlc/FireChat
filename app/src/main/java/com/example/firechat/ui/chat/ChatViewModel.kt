@@ -4,6 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import android.app.Application
+import android.net.Uri
+import com.example.firechat.data.media.OutgoingMedia
+import com.example.firechat.data.repository.ChatMediaRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
@@ -29,6 +34,7 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
 
     private val userRepository = UserRepository()
     private val chatRepository = ChatRepository()
+    private val mediaRepository = ChatMediaRepository()
 
     val myUid: String = AuthRepository().currentUserId.orEmpty()
 
@@ -86,7 +92,7 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
                 lastMarked = marker
                 confirmed = true
             } catch (error: CancellationException) { throw error }
-            catch (_: Exception) { _uiState.value = ChatUiState(error = R.string.error_read_receipt) }
+            catch (_: Exception) { _uiState.value = (_uiState.value ?: ChatUiState()).copy(error = R.string.error_read_receipt) }
             finally {
                 readJob = null
                 if (confirmed) publishRead()
@@ -125,7 +131,7 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
     val uiState: LiveData<ChatUiState> = _uiState
 
     val messages: LiveData<List<Message>> = chatRepository.observeMessages(chatId)
-        .catch { _uiState.value = ChatUiState(error = R.string.error_loading_messages) }
+        .catch { _uiState.value = (_uiState.value ?: ChatUiState()).copy(error = R.string.error_loading_messages) }
         .asLiveData()
 
     fun sendText(text: String) {
@@ -136,8 +142,26 @@ class ChatViewModel(application: Application, savedStateHandle: SavedStateHandle
             try {
                 chatRepository.sendText(chatId, sender(), recipient, trimmed)
             } catch (e: Exception) {
-                _uiState.value = ChatUiState(error = R.string.error_sending_message)
+                _uiState.value = (_uiState.value ?: ChatUiState()).copy(error = R.string.error_sending_message)
             }
+        }
+    }
+
+    /** Prepares, uploads and sends a photo or video picked from the device. */
+    fun sendMedia(uri: Uri) {
+        if (_uiState.value?.uploadProgress != null) return
+        _uiState.value = ChatUiState(uploadProgress = 0)
+        viewModelScope.launch {
+            try {
+                val media = withContext(Dispatchers.IO) { OutgoingMedia.from(getApplication<Application>().contentResolver, uri) }
+                val uploaded = mediaRepository.upload(chatId, myUid, media) { percent ->
+                    _uiState.postValue(ChatUiState(uploadProgress = percent))
+                }
+                chatRepository.sendMedia(chatId, sender(), recipient, media, uploaded)
+                _uiState.value = ChatUiState()
+            } catch (error: CancellationException) { throw error }
+            catch (_: OutgoingMedia.TooLargeException) { _uiState.value = ChatUiState(error = R.string.error_media_too_large) }
+            catch (_: Exception) { _uiState.value = ChatUiState(error = R.string.error_sending_media) }
         }
     }
 

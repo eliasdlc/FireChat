@@ -8,6 +8,8 @@
     <color name="mute">#A5AEBD</color>
     <color name="ac">#82AAFF</color>
     <color name="on">#0B1B3D</color>
+    <color name="ln">#14F5F7FA</color>
+    <color name="ln2">#2EF5F7FA</color>
     <color name="error">#FFB4AB</color>
     <color name="ac_green">#75D9A9</color>
     <color name="on_green">#082C1D</color>

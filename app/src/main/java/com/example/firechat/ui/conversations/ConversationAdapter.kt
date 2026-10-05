@@ -1,5 +1,6 @@
 package com.example.firechat.ui.conversations
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firechat.R
+import com.example.firechat.data.model.Message
 import com.example.firechat.ui.common.AvatarView
 import com.example.firechat.util.DateFormatter
+import com.google.android.material.color.MaterialColors
 
 class ConversationAdapter(
     private val myUid: String,
@@ -56,16 +59,25 @@ class ConversationAdapter(
             val otherName = nicknames[conversation.otherUid(myUid)] ?: conversation.otherName(myUid)
             name.text = otherName
             avatar.bind(otherName, photos[conversation.otherUid(myUid)])
-            lastMessage.text = if (conversation.lastMessageIsImage) {
-                context.getString(R.string.message_image_preview)
-            } else {
-                conversation.lastMessage
+            lastMessage.text = when {
+                conversation.lastMessageType == Message.TYPE_IMAGE || conversation.lastMessageIsImage ->
+                    context.getString(R.string.message_image_preview)
+                conversation.lastMessageType == Message.TYPE_VIDEO -> context.getString(R.string.message_video_preview)
+                else -> conversation.lastMessage
             }
             time.text = DateFormatter.conversationTime(context, conversation.lastMessageAt)
             val unread = row.unreadCount ?: 0
             badge.visibility = if (unread > 0) View.VISIBLE else View.GONE
             badge.text = if (unread > 99) "99+" else unread.toString()
             badge.contentDescription = context.resources.getQuantityString(R.plurals.unread_messages_count, unread, unread)
+            // Un chat con mensajes sin leer destaca la hora con el acento y el último mensaje en tinta.
+            val hasUnread = unread > 0
+            time.setTextColor(
+                if (hasUnread) MaterialColors.getColor(time, androidx.appcompat.R.attr.colorPrimary)
+                else context.getColor(R.color.mute)
+            )
+            lastMessage.setTextColor(context.getColor(if (hasUnread) R.color.ink else R.color.mute))
+            lastMessage.setTypeface(null, if (hasUnread) Typeface.BOLD else Typeface.NORMAL)
             itemView.setOnClickListener { onClick(conversation) }
             itemView.setOnLongClickListener { onLongClick(row); true }
         }

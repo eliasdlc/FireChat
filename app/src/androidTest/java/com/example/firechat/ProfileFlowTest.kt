@@ -300,7 +300,7 @@ class ProfileFlowTest {
     }
 
     @Test
-    fun jLogoutCanBeCancelledThenReturnsToLogin() {
+    fun jLogoutCanBeCancelledThenReturnsToWelcome() {
         seedProfile()
         ActivityScenario.launch(ProfileActivity::class.java).use {
             onView(withId(R.id.logoutProfileRow)).perform(scrollTo(), click())
@@ -309,7 +309,7 @@ class ProfileFlowTest {
             onView(withId(R.id.logoutProfileRow)).perform(scrollTo(), click())
             onView(withId(android.R.id.button1)).perform(click())
             assertEquals(null, auth.currentUser)
-            onView(withId(R.id.loginButton)).check(matches(isDisplayed()))
+            onView(withId(R.id.welcomeLoginButton)).check(matches(isDisplayed()))
         }
     }
 

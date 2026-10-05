@@ -8,5 +8,15 @@ service firebase.storage {
         && request.resource.contentType == 'image/jpeg';
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
+
+    // Chat media: only the two participants read it, and each one writes only
+    // inside their own folder. Images arrive as JPEG; videos keep their format.
+    match /chats/{chatId}/{uid}/{file} {
+      allow read: if request.auth != null && request.auth.uid in chatId.split('_');
+      allow create: if request.auth != null && request.auth.uid == uid
+        && uid in chatId.split('_')
+        && ((request.resource.contentType == 'image/jpeg' && request.resource.size <= 4 * 1024 * 1024)
+          || (request.resource.contentType.matches('video/.*') && request.resource.size <= 50 * 1024 * 1024));
+    }
   }
 }

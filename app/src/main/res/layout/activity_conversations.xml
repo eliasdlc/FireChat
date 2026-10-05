@@ -23,6 +23,7 @@
         android:layout_marginHorizontal="@dimen/screen_margin"
         android:layout_marginTop="@dimen/space_s" android:hint="@string/search_chats"
         app:startIconDrawable="@drawable/ic_search" app:endIconMode="clear_text"
+        app:boxStrokeWidth="0dp"
         app:boxCornerRadiusTopStart="@dimen/radius_pill" app:boxCornerRadiusTopEnd="@dimen/radius_pill"
         app:boxCornerRadiusBottomStart="@dimen/radius_pill" app:boxCornerRadiusBottomEnd="@dimen/radius_pill"
         app:layout_constraintTop_toBottomOf="@id/toolbar"

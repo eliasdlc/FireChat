@@ -2,7 +2,8 @@ package com.example.firechat.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -10,6 +11,7 @@ import com.example.firechat.ui.theme.ThemedActivity
 import com.example.firechat.R
 import com.example.firechat.ui.conversations.ConversationsActivity
 import com.example.firechat.util.applySystemBarsPadding
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -35,7 +37,7 @@ class RegisterActivity : ThemedActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
-        findViewById<ViewGroup>(android.R.id.content).getChildAt(0).applySystemBarsPadding()
+        findViewById<View>(R.id.main).applySystemBarsPadding()
 
         nameLayout = findViewById(R.id.nameLayout)
         emailLayout = findViewById(R.id.emailLayout)
@@ -49,7 +51,9 @@ class RegisterActivity : ThemedActivity() {
         registerButton = findViewById(R.id.registerButton)
         goToLoginButton = findViewById(R.id.goToLoginButton)
 
-        registerButton.setOnClickListener {
+        findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
+
+        val submit = {
             viewModel.register(
                 name = nameInput.text.toString(),
                 email = emailInput.text.toString().trim(),
@@ -57,7 +61,16 @@ class RegisterActivity : ThemedActivity() {
                 confirmation = confirmInput.text.toString()
             )
         }
-        goToLoginButton.setOnClickListener { finish() }
+        registerButton.setOnClickListener { submit() }
+        confirmInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) submit()
+            actionId == EditorInfo.IME_ACTION_DONE
+        }
+        // Cambia de formulario sin apilarlos: Atrás vuelve siempre a la bienvenida.
+        goToLoginButton.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
 
         viewModel.uiState.observe(this) { state -> render(state) }
     }
@@ -80,7 +93,7 @@ class RegisterActivity : ThemedActivity() {
     }
 
     /**
-     * Abre las conversaciones en una tarea nueva: así el login y el registro
+     * Abre las conversaciones en una tarea nueva: así la bienvenida y el registro
      * salen de la pila y Atrás cierra la app en vez de volver al formulario.
      */
     private fun openConversations() {

@@ -11,6 +11,7 @@ data class Conversation(
     val lastMessage: String = "",
 
     val lastMessageIsImage: Boolean = false,
+    val lastMessageType: String = Message.TYPE_TEXT,
     val lastMessageAt: Date? = null
 ) {
 

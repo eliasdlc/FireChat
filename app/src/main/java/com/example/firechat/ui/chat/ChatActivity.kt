@@ -15,6 +15,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.firechat.notifications.ActiveChat
+import com.example.firechat.notifications.NotificationHelper
 import androidx.activity.viewModels
 import com.example.firechat.ui.theme.ThemedActivity
 import androidx.core.widget.doAfterTextChanged
@@ -31,6 +35,11 @@ class ChatActivity : ThemedActivity() {
 
     private var wallpaperJob: Job? = null
     private val viewModel: ChatViewModel by viewModels()
+
+    // The system photo picker: no storage permission, photos and videos only.
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) viewModel.sendMedia(uri)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +88,9 @@ class ChatActivity : ThemedActivity() {
             chatAvatar.bind(chatName.text.toString(), photo)
         }
 
-        val adapter = MessageAdapter(viewModel.myUid)
+        val adapter = MessageAdapter(viewModel.myUid) { message ->
+            startActivity(MediaViewerActivity.newIntent(this, message))
+        }
         messageList.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         messageList.adapter = adapter
 
@@ -93,6 +104,12 @@ class ChatActivity : ThemedActivity() {
             messageInput.text?.clear()
         }
 
+        val attachButton = findViewById<ImageButton>(R.id.attachButton)
+        attachButton.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+        }
+        val uploadStatus = findViewById<TextView>(R.id.uploadStatus)
+
         viewModel.recipientTyping.observe(this) { typingBubble.isVisible = it }
 
         viewModel.recipientRead.observe(this) { adapter.submitRecipientRead(it) }
@@ -103,6 +120,10 @@ class ChatActivity : ThemedActivity() {
             }
         }
         viewModel.uiState.observe(this) { state ->
+            val progress = state.uploadProgress
+            uploadStatus.isVisible = progress != null
+            if (progress != null) uploadStatus.text = getString(R.string.media_uploading, progress)
+            attachButton.isEnabled = progress == null
             state.error?.let {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 viewModel.errorShown()
@@ -118,6 +139,8 @@ class ChatActivity : ThemedActivity() {
             findViewById<View>(R.id.chatWallpaper).background = WallpaperRenderer.load(this@ChatActivity, viewModel.myUid, wallpaper)
         }
         viewModel.chatResumed()
+        ActiveChat.chatId = viewModel.chatId
+        NotificationHelper.cancel(this, viewModel.chatId)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -125,7 +148,11 @@ class ChatActivity : ThemedActivity() {
         viewModel.windowFocusChanged(hasFocus)
     }
 
-    override fun onPause() { viewModel.chatPaused(); super.onPause() }
+    override fun onPause() {
+        viewModel.chatPaused()
+        if (ActiveChat.chatId == viewModel.chatId) ActiveChat.chatId = null
+        super.onPause()
+    }
 
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"
